@@ -1,6 +1,6 @@
 <!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#10264d"><meta name="description" content="Administrasi PKK Digital Desa Kediren – Pokja IV"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="PKK Digital">
-<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icons/pkk-digital.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icons/icon-192.png"><script src="https://cdn.tailwindcss.com"></script><style>
+<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icons/pkk-digital.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/icons/icon-192.png?v=5"><script src="https://cdn.tailwindcss.com"></script><style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 :root{--ink:#17243b;--muted:#718096;--line:#e7edf5;--blue:#2563eb;--navy:#10264d;--soft:#f4f7fc}
 *{box-sizing:border-box}body{font-family:Inter,Arial,sans-serif;background:var(--soft);color:var(--ink);margin:0}
@@ -102,17 +102,18 @@ table{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}th,td
 #login.login-screen:before,#login.login-screen:after{content:"";position:absolute;z-index:-1;border:1px solid #cbdcf5;border-radius:50%;width:420px;height:420px;opacity:.32}
 #login.login-screen:before{top:-250px;right:-140px}#login.login-screen:after{bottom:-300px;left:-160px;width:520px;height:520px}
 #login .login-card{position:relative;padding:clamp(28px,6vw,44px);border:1px solid #e2eaf5;border-radius:30px;background:rgba(255,255,255,.91);box-shadow:0 28px 90px rgba(31,63,112,.13),inset 0 1px #fff;backdrop-filter:blur(18px)}
-.login-brand{display:flex;justify-content:center;margin-bottom:20px}.brand-symbol{width:82px;height:82px;border-radius:26px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#397df5,#1744a4);box-shadow:0 15px 32px #245bd044,inset 0 1px #ffffff65}.brand-symbol svg{width:58px;height:58px}
+.login-brand{display:flex;justify-content:center;margin-bottom:20px}.brand-symbol{width:82px;height:82px;border-radius:26px;display:grid;place-items:center;color:#fff;background:linear-gradient(145deg,#397df5,#1744a4);box-shadow:0 15px 32px #245bd044,inset 0 1px #ffffff65}.brand-symbol svg,.brand-symbol img{width:100%;height:100%;object-fit:contain}
 .login-eyebrow{text-align:center;font-size:10px;letter-spacing:.19em;font-weight:800;color:#3975dc;margin:0 0 9px}.login-card h1{text-align:center;font-size:clamp(30px,6vw,38px);font-weight:850;letter-spacing:-.055em;color:#172b4d;margin:0}.login-subtitle{text-align:center;color:#73839b;font-size:13px;line-height:1.6;margin:9px auto 28px;max-width:290px}
 .login-label{display:block;font-size:12px;font-weight:750;color:#40516a;margin:15px 0 7px}.login-input-wrap{position:relative;display:flex;align-items:center}.login-input-wrap>span{position:absolute;left:15px;color:#8ba0bd;font-size:18px;z-index:1}.login-input-wrap .field{height:52px;border-radius:14px;padding:0 52px 0 45px;border-color:#dce6f3;background:#f9fbff;font-size:14px}.login-input-wrap .field:focus{background:#fff}.password-toggle{position:absolute;right:10px;padding:7px 9px;border-radius:8px;color:#2862c5;font-size:11px;font-weight:750}.remember-row{display:flex;align-items:center;gap:9px;margin:17px 0 8px;color:#667891;font-size:12px}.remember-row input{width:16px;height:16px;accent-color:#2563eb}.login-error{min-height:18px;color:#dc3545;font-size:12px;margin:8px 0}.login-submit{width:100%;height:52px;border-radius:14px;justify-content:space-between;padding:0 18px;font-size:14px;box-shadow:0 12px 24px #2563eb30}.login-submit:disabled{opacity:.65;cursor:wait}.login-foot{display:flex;justify-content:space-between;gap:12px;margin-top:24px;padding-top:17px;border-top:1px solid #edf1f7;color:#9aa9bd;font-size:9px;font-weight:750;letter-spacing:.07em}
-@media(max-width:480px){#login.login-screen{padding:18px;min-height:100svh}.login-card{border-radius:25px!important;padding:30px 23px!important}.brand-symbol{width:72px;height:72px;border-radius:23px}.brand-symbol svg{width:52px;height:52px}.login-subtitle{margin-bottom:23px}}
-@media(display-mode:standalone){#login.login-screen{min-height:100svh;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom))}}
+@media(max-width:480px){#login.login-screen{padding:18px;min-height:100svh}.login-card{border-radius:25px!important;padding:30px 23px!important}.brand-symbol{width:72px;height:72px;border-radius:23px}.brand-symbol svg,.brand-symbol img{width:100%;height:100%;object-fit:contain}.login-subtitle{margin-bottom:23px}}
+@media(display-mode:standalone){body{min-height:100svh}#login.login-screen{min-height:100svh;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom))}#app main{padding-top:max(15px,env(safe-area-inset-top))!important;padding-bottom:max(24px,env(safe-area-inset-bottom))!important}}
+/* Instalasi PWA dilakukan manual melalui menu Bagikan Safari; tidak ada tombol instalasi di UI. */
 </style></head><body>
-<button id="pwaInstallBtn" type="button" aria-label="Pasang PKK Digital" style="display:none;position:fixed;right:18px;bottom:18px;z-index:95;border:0;border-radius:999px;padding:13px 18px;background:linear-gradient(135deg,#3478ed,#1e40af);color:#fff;font:700 13px Inter,Arial,sans-serif;box-shadow:0 10px 28px #1e40af40;cursor:pointer">⬇ Pasang PKK Digital</button>
+
 <div id="networkStatus" role="status" aria-live="polite" style="display:none;position:sticky;top:0;z-index:1000;padding:8px 12px;text-align:center;font:600 12px Inter,Arial;background:#fff7ed;color:#9a3412">Koneksi internet terputus. Data belum dapat disinkronkan.</div>
 <div id="login" class="login-screen min-h-screen grid place-items-center p-5">
  <form id="lf" class="login-card w-full max-w-md">
-  <div class="login-brand"><div class="brand-symbol" aria-hidden="true"><svg viewBox="0 0 64 64" role="img"><path d="M32 7c-7 0-12 5-12 12 0 4 2 8 6 11-8-2-15 2-17 9-2 7 2 14 9 16 6 2 12-1 14-7 2 6 8 9 14 7 7-2 11-9 9-16-2-7-9-11-17-9 4-3 6-7 6-11C44 12 39 7 32 7Z" fill="currentColor" opacity=".96"/><path d="M32 20c-5 7-8 12-8 17a8 8 0 0 0 16 0c0-5-3-10-8-17Z" fill="#fff"/><path d="M17 48c5-1 10-4 15-9 5 5 10 8 15 9" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></svg></div></div>
+  <div class="login-brand"><div class="brand-symbol" aria-hidden="true"><img src="/icons/pkk-digital.svg?v=5" alt=""></div></div>
   <p class="login-eyebrow">DESA KEDIREN · POKJA IV</p><h1>PKK Digital</h1><p class="login-subtitle">Administrasi Tim Penggerak PKK dalam satu ruang kerja.</p>
   <label class="login-label" for="un">Username</label><div class="login-input-wrap"><span aria-hidden="true">♙</span><input id="un" class="field" placeholder="Masukkan username" autocomplete="username" required></div>
   <label class="login-label" for="pw">Password</label><div class="login-input-wrap"><span aria-hidden="true">⌑</span><input id="pw" class="field" type="password" placeholder="Masukkan password" autocomplete="current-password" required><button type="button" class="password-toggle" id="togglePassword" aria-label="Tampilkan password">Lihat</button></div>
@@ -484,33 +485,10 @@ if(token)start();
 </script></main></div><script>
 (function(){
  const status=document.getElementById('networkStatus');
- const installBtn=document.getElementById('pwaInstallBtn');
- let installPrompt=null;
- const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
- const isStandalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
  function updateNetwork(){if(status)status.style.display=navigator.onLine?'none':'block'}
- function updateInstallButton(){
-   if(!installBtn)return;
-   if(isStandalone()){installBtn.style.display='none';return}
-   if(isIOS){installBtn.textContent='＋ Pasang di Layar Utama';installBtn.style.display='inline-flex';return}
-   installBtn.style.display=installPrompt?'inline-flex':'none';
- }
  window.addEventListener('online',updateNetwork);
  window.addEventListener('offline',updateNetwork);
- window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;updateInstallButton()});
- window.addEventListener('appinstalled',()=>{installPrompt=null;updateInstallButton()});
- if(installBtn)installBtn.addEventListener('click',async()=>{
-   if(isIOS){
-     alert('Cara memasang PKK Digital di iPhone/iPad:\n1. Buka halaman ini melalui Safari.\n2. Tekan tombol Bagikan (ikon kotak dengan panah ke atas).\n3. Pilih “Tambahkan ke Layar Utama”.\n4. Tekan “Tambah”.');
-     return;
-   }
-   if(!installPrompt){alert('Untuk memasang aplikasi, buka situs ini melalui Chrome atau Edge versi terbaru.');return}
-   installPrompt.prompt();
-   try{await installPrompt.userChoice}catch(e){}
-   installPrompt=null;updateInstallButton();
- });
- updateNetwork();updateInstallButton();
- window.matchMedia('(display-mode: standalone)').addEventListener?.('change',updateInstallButton);
+ updateNetwork();
  if('serviceWorker' in navigator)window.addEventListener('load',()=>{
    navigator.serviceWorker.register('/sw.js',{scope:'/'})
     .then(reg=>{reg.update().catch(()=>{});reg.addEventListener('updatefound',()=>{const worker=reg.installing;if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)console.info('Pembaruan PKK Digital siap digunakan setelah halaman dimuat ulang.')})})})
