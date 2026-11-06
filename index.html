@@ -108,6 +108,29 @@ table{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}th,td
 @media(max-width:480px){#login.login-screen{padding:18px;min-height:100svh}.login-card{border-radius:25px!important;padding:30px 23px!important}.brand-symbol{width:72px;height:72px;border-radius:23px}.brand-symbol svg,.brand-symbol img{width:100%;height:100%;object-fit:contain}.login-subtitle{margin-bottom:23px}}
 @media(display-mode:standalone){body{min-height:100svh}#login.login-screen{min-height:100svh;padding-top:max(24px,env(safe-area-inset-top));padding-bottom:max(24px,env(safe-area-inset-bottom))}#app main{padding-top:max(15px,env(safe-area-inset-top))!important;padding-bottom:max(24px,env(safe-area-inset-bottom))!important}}
 /* Instalasi PWA dilakukan manual melalui menu Bagikan Safari; tidak ada tombol instalasi di UI. */
+
+/* Landscape phone/tablet: compact navigation and readable data workspace */
+@media (orientation:landscape) and (max-height:520px){
+  #app aside{width:196px!important;padding:12px!important}
+  #app main{margin-left:196px!important;padding:12px 16px!important;min-width:0}
+  #app aside .nav{min-height:34px;padding:7px 9px;font-size:11px}
+  #app aside .nav-section{padding-top:8px;margin-top:5px;font-size:8px}
+  #app header{padding:11px 15px;margin-bottom:12px!important}
+  #app header h1{font-size:19px}
+  #app header p{font-size:11px}
+  #body>.card{padding:12px}
+  #body .btn,#body .btn-secondary{min-height:36px;padding:8px 11px;font-size:11px}
+  #body .table-toolbar{gap:8px}
+  #body .table-toolbar .field{padding:8px 10px;font-size:11px}
+  #body table{min-width:640px}
+  #body th,#body td{padding:8px 9px;font-size:11px}
+  #body .scroll{max-width:100%;overscroll-behavior-x:contain}
+  #body .empty-panel{min-height:210px;padding:24px 16px}
+}
+.empty-panel{min-height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:38px 20px;background:linear-gradient(145deg,#fff,#f8fbff);border:1px dashed #cbdcf2;border-radius:15px}
+.empty-illustration{width:58px;height:58px;border-radius:18px;display:grid;place-items:center;background:#eff6ff;color:#3975dc;font-size:27px;margin-bottom:13px}
+.empty-panel h3{font-size:16px;font-weight:800;color:#17243b;margin:0 0 6px}
+.empty-panel p{font-size:12px;line-height:1.6;color:#718096;margin:0 0 16px;max-width:360px}
 </style></head><body>
 
 <div id="networkStatus" role="status" aria-live="polite" style="display:none;position:sticky;top:0;z-index:1000;padding:8px 12px;text-align:center;font:600 12px Inter,Arial;background:#fff7ed;color:#9a3412">Koneksi internet terputus. Data belum dapat disinkronkan.</div>
@@ -230,8 +253,24 @@ function getCategoryOptions(){const f=getCategoryField();return f?[...new Set(da
 function rowHasYear(r,year){return mod.fields.some(f=>{const v=String(r[f]??'');return (/tahun|tanggal|tgl|date/i.test(f)?v.includes(year):false)})||mod.fields.some(f=>String(r[f]??'').includes(year))}
 function filteredRows(){let q=String(tableState.query||'').toLowerCase().trim(),catField=getCategoryField();let a=data.filter(r=>(!q||mod.fields.some(f=>String(r[f]??'').toLowerCase().includes(q)))&&(!tableState.year||rowHasYear(r,tableState.year))&&(!tableState.category||String(r[catField]??'')===tableState.category));if(tableState.sortField){let f=tableState.sortField;a.sort((x,y)=>{let a=x[f]??'',b=y[f]??'',na=Number(a),nb=Number(b);let c=a!==''&&b!==''&&Number.isFinite(na)&&Number.isFinite(nb)?na-nb:String(a).localeCompare(String(b),'id',{numeric:true,sensitivity:'base'});return c*tableState.sortDir})}return a}
 
-function drawTable(){let a=filteredRows(),pages=Math.max(1,Math.ceil(a.length/tableState.pageSize));tableState.page=Math.min(tableState.page,pages);let from=(tableState.page-1)*tableState.pageSize,shown=a.slice(from,from+tableState.pageSize);$('rows').innerHTML=shown.length?shown.map(r=>`<tr>${mod.fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}<td class="noprint"><div class="crud-actions"><button class="btn-icon" title="Edit data" aria-label="Edit data" onclick="edit('${esc(r.record_id)}')">✎</button><button class="btn-danger" title="Hapus data" aria-label="Hapus data" onclick="del('${esc(r.record_id)}')">Hapus</button></div></td></tr>`).join(''):`<tr><td colspan="${mod.fields.length+1}" class="empty-state"><div class="empty-icon">▤</div><b class="block text-slate-600 mb-1">${tableState.query?'Data tidak ditemukan':'Belum ada data'}</b><span>${tableState.query?'Coba kata kunci pencarian lain.':'Tekan Tambah Data untuk membuat catatan pertama.'}</span></td></tr>`;
-  $('recordCount').textContent=`${a.length} dari ${data.length} data`; $('tableInfo').textContent=a.length?`Menampilkan ${from+1}–${Math.min(from+tableState.pageSize,a.length)} dari ${a.length}`:'Tidak ada data';$('pageSummary').textContent=`Halaman ${tableState.page} dari ${pages}`;
+function drawTable(){
+  let a=filteredRows(),pages=Math.max(1,Math.ceil(a.length/tableState.pageSize));
+  tableState.page=Math.min(tableState.page,pages);
+  let from=(tableState.page-1)*tableState.pageSize,shown=a.slice(from,from+tableState.pageSize);
+  const scroll=document.querySelector('#body .scroll'),toolbar=document.querySelector('#body .table-toolbar'),pagerWrap=document.querySelector('#body .pager')?.parentElement;
+  if(data.length===0){
+    if(toolbar)toolbar.classList.add('hidden');
+    if(pagerWrap)pagerWrap.classList.add('hidden');
+    if(scroll)scroll.innerHTML=`<section class="empty-panel"><div class="empty-illustration">▤</div><h3>Belum ada data tersimpan</h3><p>Semua catatan pada buku ini sudah dihapus atau belum pernah ditambahkan.</p><button class="btn" onclick="formOpen()">＋ Tambah Data Pertama</button></section>`;
+  }else{
+    if(toolbar)toolbar.classList.remove('hidden');
+    if(pagerWrap)pagerWrap.classList.remove('hidden');
+    const rows=$('rows');
+    if(rows)rows.innerHTML=shown.length?shown.map(r=>`<tr>${mod.fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}<td class="noprint"><div class="crud-actions"><button class="btn-icon" title="Edit data" aria-label="Edit data" onclick="edit('${esc(r.record_id)}')">✎</button><button class="btn-danger" title="Hapus data" aria-label="Hapus data" onclick="del('${esc(r.record_id)}')">Hapus</button></div></td></tr>`).join(''):`<tr><td colspan="${mod.fields.length+1}" class="empty-state"><div class="empty-icon">⌕</div><b class="block text-slate-600 mb-1">Data tidak ditemukan</b><span>Coba ubah kata kunci atau filter pencarian.</span></td></tr>`;
+  }
+  $('recordCount').textContent=data.length===0?'0 data tersimpan':`${a.length} dari ${data.length} data`;
+  $('tableInfo').textContent=a.length?`Menampilkan ${from+1}–${Math.min(from+tableState.pageSize,a.length)} dari ${a.length}`:'Tidak ada hasil';
+  $('pageSummary').textContent=`Halaman ${tableState.page} dari ${pages}`;
   $('pager').innerHTML=`<button ${tableState.page<=1?'disabled':''} onclick="goPage(${tableState.page-1})">‹ Sebelumnya</button><button class="current">${tableState.page}</button><button ${tableState.page>=pages?'disabled':''} onclick="goPage(${tableState.page+1})">Berikutnya ›</button>`;
 }
 function filter(){tableState.query=$('q').value;tableState.page=1;drawTable()}
