@@ -487,6 +487,10 @@ function buildSourceStyleTable(key,fields,rows){
 function buildPrintSection(book,rows,mode,includeSignature=true){
   const original=mode==='asli';
   const isProgram=book.key==='program';
+  // Nomor pada hasil cetak/PDF selalu dibuat ulang mulai dari 1,
+  // tidak mengambil nomor lama/ID yang tersimpan pada database.
+  const noField=(book.fields||[]).find(f=>String(f).trim().toLowerCase()==='no');
+  const printRows=noField?rows.map((r,i)=>({...r,[noField]:i+1})):rows;
   const signature=`<div class="print-signatures"><div>Mengetahui<br>Ketua TP PKK Desa Kediren<br><br><b>Ny. SUNARSIH WAKINO</b></div><div>Kediren, ____________________<br>Ketua POKJA IV<br><br><b>PRAMUNGATUN</b></div></div>`;
   const title=esc(book.title.toUpperCase()),sub='TIM PENGGERAK PKK DESA KEDIREN KECAMATAN LEMBEYAN';
   let table='';
@@ -495,12 +499,12 @@ function buildPrintSection(book,rows,mode,includeSignature=true){
     const other=(label)=>book.fields.find(f=>f.trim().toLowerCase()===label.toLowerCase())||label;
     const keys={no:other('No'),pokok:other('Program Pokok PKK'),pokja:other('Program Pokja IV'),kegiatan:other('Kegiatan'),sasaran:other('Sasaran'),lokasi:other('Lokasi'),mitra:other('Mitra'),indikator:other('Indikator Keberhasilan'),ket:other('Keterangan')};
     const cell=(r,k)=>esc(r?.[k]??'');
-    const programRows=rows.map(r=>{const months=getProgramMonths(r[monthField]);return `<tr><td>${cell(r,keys.no)}</td><td>${cell(r,keys.pokok)}</td><td>${cell(r,keys.pokja)}</td><td>${cell(r,keys.kegiatan)}</td><td>${cell(r,keys.sasaran)}</td><td>${cell(r,keys.lokasi)}</td>${PROGRAM_MONTHS.map(m=>`<td class="month-cell">${months.includes(m)?'✓':''}</td>`).join('')}<td>${cell(r,keys.mitra)}</td><td>${cell(r,keys.indikator)}</td><td>${cell(r,keys.ket)}</td></tr>`}).join('');
-    const blankCount=Math.max(0,17-rows.length);
+    const programRows=printRows.map(r=>{const months=getProgramMonths(r[monthField]);return `<tr><td>${cell(r,keys.no)}</td><td>${cell(r,keys.pokok)}</td><td>${cell(r,keys.pokja)}</td><td>${cell(r,keys.kegiatan)}</td><td>${cell(r,keys.sasaran)}</td><td>${cell(r,keys.lokasi)}</td>${PROGRAM_MONTHS.map(m=>`<td class="month-cell">${months.includes(m)?'✓':''}</td>`).join('')}<td>${cell(r,keys.mitra)}</td><td>${cell(r,keys.indikator)}</td><td>${cell(r,keys.ket)}</td></tr>`}).join('');
+    const blankCount=Math.max(0,17-printRows.length);
     const blanks=Array.from({length:blankCount},()=>'<tr class="blank-row">'+Array.from({length:21},()=>'<td>&nbsp;</td>').join('')+'</tr>').join('');
     table=`<table class="program-table"><colgroup><col class="c-no"><col class="c-pokok"><col class="c-pokja"><col class="c-kegiatan"><col class="c-sasaran"><col class="c-lokasi">${PROGRAM_MONTHS.map(()=>'<col class="c-month">').join('')}<col class="c-mitra"><col class="c-indikator"><col class="c-ket"></colgroup><thead><tr><th rowspan="2">No</th><th rowspan="2">Program<br>Pokok PKK</th><th rowspan="2">Program<br>Pokja IV</th><th rowspan="2">Kegiatan</th><th rowspan="2">Sasaran</th><th rowspan="2">Lokasi</th><th colspan="12">Waktu Pelaksanaan</th><th rowspan="2">Mitra</th><th rowspan="2">Indikator<br>Keberhasilan</th><th rowspan="2">Keterangan</th></tr><tr>${PROGRAM_MONTHS.map((m,i)=>`<th title="${m}">${i+1}</th>`).join('')}</tr></thead><tbody>${programRows}${blanks}</tbody></table>`;
   }else{
-    table=buildSourceStyleTable(book.key,book.fields,rows);
+    table=buildSourceStyleTable(book.key,book.fields,printRows);
   }
 
   return `<section class="print-wrap"><h2 class="print-title">${isProgram?'BUKU PROGRAM KERJA':title}</h2><p class="print-sub">${sub}</p><p class="print-date">Tahun: ____________________</p>${table}${includeSignature?signature:''}</section>`;
