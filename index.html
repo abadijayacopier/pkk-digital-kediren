@@ -1,30 +1,464 @@
-<!doctype html>
-<html lang="id">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#10264d">
-<meta name="description" content="PKK Digital Desa Kediren – Administrasi Pokja IV">
-<link rel="manifest" href="/manifest.webmanifest">
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
-<title>PKK Digital – Desa Kediren</title>
-<style>
-*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f4f7fc;color:#17243b;font:16px system-ui,sans-serif;padding:24px}
-main{width:min(100%,640px);background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:32px;box-shadow:0 12px 36px #10264d12}
-h1{color:#10264d;margin:0 0 12px}.muted{color:#64748b;line-height:1.65}.pill{display:inline-block;background:#eaf2ff;color:#1d4ed8;padding:6px 10px;border-radius:999px;font-size:13px;font-weight:600}
-</style>
-</head>
-<body>
-<main>
-<span class="pill">PWA starter</span>
-<h1>PKK Digital – Desa Kediren</h1>
-<p>Kerangka aplikasi berhasil dimuat di Vercel.</p>
-<p class="muted">Integrasi aplikasi administrasi dan Google Apps Script masih dalam tahap pengujian. Jangan gunakan halaman ini untuk memasukkan data operasional sampai integrasi selesai diverifikasi.</p>
-<p class="muted"><strong>Developer:</strong> Supriyanto Abadi Jaya · © <span id="year"></span></p>
-</main>
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10264d"><meta name="description" content="Administrasi PKK Digital Desa Kediren – Pokja IV">
+<link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icons/icon-192.png" sizes="192x192"><link rel="apple-touch-icon" href="/icons/icon-192.png"><script src="https://cdn.tailwindcss.com"></script><style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+:root{--ink:#17243b;--muted:#718096;--line:#e7edf5;--blue:#2563eb;--navy:#10264d;--soft:#f4f7fc}
+*{box-sizing:border-box}body{font-family:Inter,Arial,sans-serif;background:var(--soft);color:var(--ink);margin:0}
+.field{width:100%;border:1px solid #dce5f1;border-radius:11px;padding:11px 13px;background:#fff;color:var(--ink);outline:none;transition:.18s}
+.field:focus{border-color:#78a5fa;box-shadow:0 0 0 3px #dbeafe}
+.btn{background:linear-gradient(135deg,#3478ed,#245bd0);color:#fff;padding:11px 16px;border-radius:11px;font-weight:650;box-shadow:0 5px 12px #2563eb24;transition:.18s}
+.btn:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:20px;box-shadow:0 5px 20px #1e3a5f08}
+.nav{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:10px 12px;border-radius:11px;color:#c2cde0;font-size:12px;font-weight:550;margin:2px 0;transition:.18s;min-height:39px}
+.nav:before{content:'•';font-size:16px;line-height:10px;color:#7892b8}.nav:hover,.nav.active{background:#ffffff18;color:#fff}.nav.active{box-shadow:inset 3px 0 #76a9ff;background:#ffffff20}
+.nav-section{display:flex;align-items:center;gap:8px;padding:12px 11px 6px;margin-top:8px;color:#8fb5eb;font-size:9px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}.nav-section:before{content:'';width:5px;height:5px;border-radius:2px;background:#60a5fa}.nav-group{padding:0 0 5px 7px;margin-left:9px;border-left:1px solid #ffffff20}.nav-group .nav{padding-left:13px}.nav-group .nav:before{content:'';width:5px;height:5px;border-radius:50%;background:#6486b6;flex:none}.nav-group .nav.active:before{background:#93c5fd;box-shadow:0 0 0 3px #60a5fa24}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}th,td{border-bottom:1px solid #edf1f7;padding:12px 13px;text-align:left;font-size:12px;vertical-align:middle}th{background:#f7f9fd;color:#64748b;font-size:11px;text-transform:uppercase;letter-spacing:.035em;font-weight:700;white-space:nowrap}tbody tr:hover{background:#f8fbff}.scroll{overflow:auto;border-radius:12px}
+#app aside{background:linear-gradient(180deg,#10264d 0%,#173969 100%);color:white;border:0;box-shadow:8px 0 30px #10264d0b}
+#app main{min-height:100vh}#app header{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px 21px;align-items:center;box-shadow:0 4px 16px #1e3a5f06}
+#title{letter-spacing:-.035em}#role{background:#eff6ff;color:#245bd0;padding:7px 12px;border-radius:999px;font-weight:650}
+#login .card{padding:32px;box-shadow:0 22px 60px #193b6815}#login{background:radial-gradient(circle at 15% 15%,#dbeafe 0,transparent 35%),radial-gradient(circle at 85% 85%,#e0e7ff 0,transparent 35%),#f6f8fc}
+#modal{backdrop-filter:blur(5px)}#modal .card{box-shadow:0 25px 80px #0f172a35}
+
+/* Loading overlay + CRUD controls */
+.btn,.btn-secondary,.btn-danger,.btn-icon{display:inline-flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:transform .16s ease,box-shadow .16s ease,background .16s ease,border-color .16s ease}
+.btn:active,.btn-secondary:active,.btn-danger:active,.btn-icon:active{transform:scale(.97)}
+.btn:disabled,.btn-secondary:disabled,.btn-danger:disabled{opacity:.6;cursor:wait;transform:none}
+.btn-secondary{background:#fff;color:#334155;border:1px solid #dce5f1;padding:10px 14px;border-radius:11px;font-size:13px;font-weight:650}
+.btn-secondary:hover{background:#f8fbff;border-color:#a9c5ee;box-shadow:0 4px 12px #1e3a5f0d}
+.btn-danger{background:#fff1f2;color:#be123c;border:1px solid #ffe0e5;padding:7px 10px;border-radius:9px;font-size:12px;font-weight:700}
+.btn-danger:hover{background:#ffe4e6;border-color:#fecdd3}
+.btn-icon{width:34px;height:34px;border:1px solid #e2e8f0;background:#fff;color:#2563eb;border-radius:9px}
+.btn-icon:hover{background:#eff6ff;border-color:#bfdbfe}
+.crud-actions{display:flex;align-items:center;gap:7px}.table-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}.filter-select{width:auto;min-width:145px;max-width:190px;font-size:12px;padding:10px 12px}.table-toolbar>#q{flex:1 1 230px}.table-toolbar .table-meta{white-space:nowrap}@media(max-width:640px){.filter-select{flex:1 1 135px;min-width:0;max-width:none}.table-toolbar>div{width:100%;justify-content:space-between}}
+#loading{position:fixed;inset:0;z-index:100;background:#0f172a55;backdrop-filter:blur(3px);display:grid;place-items:center}
+#loading.hidden{display:none}
+.loading-card{display:flex;align-items:center;gap:13px;background:#fff;border:1px solid #e5edf7;border-radius:16px;padding:17px 21px;box-shadow:0 20px 60px #0f172a30;color:#334155;font-size:13px;font-weight:650}
+.spinner{width:25px;height:25px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:pkkspin .75s linear infinite}
+@keyframes pkkspin{to{transform:rotate(360deg)}}
+.empty-state{padding:30px 14px!important;text-align:center!important;color:#94a3b8!important}
+.empty-state .empty-icon{width:42px;height:42px;border-radius:13px;background:#eff6ff;color:#3b82f6;display:grid;place-items:center;margin:0 auto 10px;font-size:20px}
+.count-pill{display:inline-flex;align-items:center;background:#eff6ff;color:#245bd0;border-radius:999px;padding:5px 10px;font-size:11px;font-weight:700}
+
+/* Premium confirmation modal + toast notifications */
+.confirm-backdrop{position:fixed;inset:0;z-index:120;background:rgba(15,23,42,.52);backdrop-filter:blur(5px);display:grid;place-items:center;padding:18px;opacity:0;visibility:hidden;transition:opacity .18s ease,visibility .18s ease}
+.confirm-backdrop.show{opacity:1;visibility:visible}
+.confirm-panel{width:min(100%,420px);background:#fff;border:1px solid #e8eef7;border-radius:22px;padding:25px;box-shadow:0 28px 90px #0f172a45;transform:translateY(10px) scale(.98);transition:transform .18s ease}
+.confirm-backdrop.show .confirm-panel{transform:translateY(0) scale(1)}
+.confirm-icon{width:54px;height:54px;border-radius:17px;background:#fff1f2;color:#e11d48;display:grid;place-items:center;font-size:25px;margin:0 auto 15px}
+.confirm-title{text-align:center;font-size:18px;font-weight:800;color:#17243b;letter-spacing:-.025em}
+.confirm-message{text-align:center;color:#64748b;font-size:13px;line-height:1.65;margin:9px 0 22px}
+.confirm-actions{display:flex;gap:10px}
+.confirm-actions button{flex:1;min-height:44px;border-radius:11px;font-size:13px;font-weight:700;transition:.16s}
+.confirm-cancel{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.confirm-cancel:hover{background:#e8eef6}
+.confirm-delete{background:linear-gradient(135deg,#ef4444,#be123c);color:#fff;box-shadow:0 5px 14px #e11d482b}
+.confirm-delete:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.confirm-delete:disabled{opacity:.65;cursor:wait;transform:none}
+#toastStack{position:fixed;right:20px;top:20px;z-index:150;display:flex;flex-direction:column;gap:9px;pointer-events:none;width:min(360px,calc(100vw - 32px))}
+.toast{display:flex;align-items:flex-start;gap:11px;background:#fff;border:1px solid #e5edf5;border-radius:14px;padding:13px 15px;box-shadow:0 14px 38px #0f172a1c;animation:toastIn .22s ease;pointer-events:auto}
+.toast-mark{width:25px;height:25px;flex:none;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px}
+.toast.success .toast-mark{background:#dcfce7;color:#15803d}.toast.error .toast-mark{background:#ffe4e6;color:#be123c}.toast.info .toast-mark{background:#dbeafe;color:#1d4ed8}
+.toast strong{display:block;font-size:12px;color:#1e293b;margin:1px 0 3px}.toast span{display:block;font-size:11px;color:#64748b;line-height:1.45}
+@keyframes toastIn{from{opacity:0;transform:translateY(-7px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:480px){#toastStack{top:12px;right:12px;width:calc(100vw - 24px)}.confirm-panel{padding:21px;border-radius:19px}}
+@media(max-width:800px){
+#app aside{position:fixed!important;inset:0 auto 0 0!important;width:min( min(84vw,320px),320px)!important;height:100dvh;z-index:60;padding:16px!important;overflow-y:auto;transform:translateX(-105%);transition:transform .25s ease;box-shadow:18px 0 45px #0f172a30!important}
+#app aside.open{transform:translateX(0)}
+#app aside #nav{display:block;max-height:none;overflow:visible}
+#app .nav{min-height:42px;padding:11px 12px;font-size:13px}
+#app main{margin-left:0!important;padding:15px!important;min-width:0}
+#app header{gap:12px;padding:15px;align-items:center}
+#app header h1{font-size:20px}
+#body>.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#mobileMenu{display:inline-flex!important}
+#sidebarOverlay.show{display:block}
+}
+@media(max-width:480px){#body>.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}.card{padding:13px}#app header{align-items:flex-start}#role{font-size:10px;white-space:nowrap}#body .noprint{flex-wrap:wrap}#body .noprint .field{max-width:none;width:100%}#body .noprint button{flex:1 1 auto;min-height:44px}#body .scroll{margin-left:-2px;margin-right:-2px}#modal{padding:10px}#modal .card{margin:10px auto;padding:16px}#rf{grid-template-columns:1fr}#rf .col-span-2{grid-column:span 1}}
+@media(max-width:360px){#body>.grid{grid-template-columns:1fr!important}}
+
+
+/* Input form yang konsisten untuk seluruh 17 buku */
+.form-item{display:block;min-width:0}.form-label{display:block;font-size:12px;font-weight:700;color:#475569;margin:0 0 3px}.form-intro{padding:11px 13px;border:1px solid #dbeafe;background:#f5f9ff;color:#526783;border-radius:11px;font-size:12px;line-height:1.55;margin-bottom:3px}.form-textarea{resize:vertical;min-height:68px;line-height:1.5}.form-item .field{font-size:13px;min-height:42px}.form-item select.field{cursor:pointer}.form-item .form-help{display:block;line-height:1.45}.span-2{grid-column:span 2}
+@media(max-width:640px){#rf{grid-template-columns:1fr!important}.span-2{grid-column:span 1}.form-intro{grid-column:span 1}}
+
+/* Program Kerja: selector bulan 12 kolom */
+.month-picker{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.month-option{display:flex;align-items:center;gap:7px;padding:9px 10px;border:1px solid #dce5f1;border-radius:10px;background:#fff;color:#475569;font-size:12px;font-weight:600;cursor:pointer}
+.month-option:has(input:checked){border-color:#60a5fa;background:#eff6ff;color:#1d4ed8}
+.month-option input{accent-color:#2563eb;width:15px;height:15px}
+@media(max-width:480px){.month-picker{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Form, table, dashboard and print refinements */
+.form-help{font-size:11px;color:#94a3b8;margin-top:5px}.form-error{font-size:11px;color:#e11d48;margin-top:4px;display:none}.field.invalid{border-color:#fda4af;background:#fffafb;box-shadow:0 0 0 3px #ffe4e6}
+.table-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 13px}.table-meta{font-size:12px;color:#64748b}.table-sort{display:inline-flex;align-items:center;gap:5px;border:0;background:transparent;color:inherit;font:inherit;text-transform:inherit;letter-spacing:inherit;cursor:pointer;padding:0}.table-sort:hover{color:#2563eb}.pager{display:flex;align-items:center;gap:7px;flex-wrap:wrap}.pager button{border:1px solid #dbe4f0;background:#fff;color:#475569;border-radius:9px;padding:7px 10px;font-size:12px;font-weight:650}.pager button:disabled{opacity:.4;cursor:not-allowed}.pager button.current{background:#2563eb;border-color:#2563eb;color:#fff}.pager select{border:1px solid #dbe4f0;border-radius:9px;padding:7px 9px;background:#fff;color:#475569;font-size:12px}
+.stat-bar{height:9px;background:#edf2fa;border-radius:99px;overflow:hidden}.stat-bar>span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#60a5fa,#2563eb);transition:width .35s ease}.stat-row{display:grid;grid-template-columns:minmax(120px,190px) 1fr 38px;gap:12px;align-items:center;font-size:12px}.stat-row+.stat-row{margin-top:13px}
+.form-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;padding-top:12px;border-top:1px solid #edf1f7;margin-top:18px}.btn:focus-visible,.btn-secondary:focus-visible,.btn-danger:focus-visible,.btn-icon:focus-visible,.pager button:focus-visible{outline:3px solid #bfdbfe;outline-offset:2px}
+@media(max-width:600px){.table-toolbar{align-items:stretch}.table-toolbar>.field{width:100%;max-width:none}.stat-row{grid-template-columns:100px 1fr 28px;gap:8px}.pager{justify-content:center}}
+@media print{body{background:#fff!important;color:#111!important}.print-wrap{width:100%}.print-title{text-align:center;margin:0 0 5px;font-size:16px}.print-sub{text-align:center;margin:0 0 16px;font-size:11px}.print-table{min-width:0!important;width:100%;border-collapse:collapse!important;table-layout:auto}.print-table th,.print-table td{border:1px solid #333!important;padding:5px!important;font-size:9px!important;color:#111!important;background:#fff!important}.print-table th{text-align:center!important;font-weight:700}.print-date{font-size:10px;text-align:right;margin:0 0 10px}.print-signatures{display:flex;justify-content:space-between;gap:40px;margin-top:40px;text-align:center;font-size:11px}.print-signatures>div{width:45%}.print-note{font-size:9px;color:#444;margin-top:10px}}
+@media print{.noprint,#app aside,#app header{display:none!important}body{background:#fff}.card{box-shadow:none;border:0;padding:0}}
+.penyuluhan-table{table-layout:fixed;width:100%}.penyuluhan-table th{white-space:normal;word-break:normal;overflow-wrap:break-word;text-align:center;vertical-align:middle;padding:3px 4px}.penyuluhan-table td{height:7mm;min-height:7mm}.dashboard-chart{min-height:180px}@media(max-width:640px){.stat-row{grid-template-columns:95px 1fr 28px}.card{min-width:0}}
+</style></head><body>
+<div id="networkStatus" role="status" aria-live="polite" style="display:none;position:sticky;top:0;z-index:1000;padding:8px 12px;text-align:center;font:600 12px Inter,Arial;background:#fff7ed;color:#9a3412">Koneksi internet terputus. Data belum dapat disinkronkan.</div>
+<div id="login" class="min-h-screen grid place-items-center p-5"><form id="lf" class="card w-full max-w-md space-y-4"><h1 class="text-2xl font-bold text-blue-700">PKK Digital</h1><p class="text-sm text-slate-500">Desa Kediren · Administrasi Pokja IV</p><input id="un" class="field" placeholder="Username" required><input id="pw" class="field" type="password" placeholder="Password" required><p id="err" class="text-sm text-red-600"></p><button class="btn w-full">Masuk</button></form></div>
+<div id="app" class="hidden min-h-screen"><aside id="sidebar" class="fixed w-64 bg-white border-r inset-y-0 p-4 overflow-auto noprint"><div class="flex items-center justify-between gap-3 mb-2"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-white/15 grid place-items-center font-extrabold text-lg">PK</div><div><h2 class="font-extrabold text-white text-lg leading-tight">PKK Digital</h2><p class="text-[10px] text-blue-200">DESA KEDIREN</p></div></div><button type="button" class="hidden text-white/80 text-xl px-2" id="closeMenu" onclick="toggleMenu(false)" aria-label="Tutup menu">×</button></div><div class="text-[10px] uppercase tracking-widest text-blue-200/70 mt-7 mb-2 px-3">Menu Utama</div><button class="nav active" onclick="dashboard()">Dashboard</button><div class="nav-section">Administrasi</div><div id="nav"></div><hr class="my-4"><div id="who" class="text-xs mb-2"></div><button class="nav" onclick="logout()">Keluar</button></aside><button id="sidebarOverlay" class="hidden fixed inset-0 bg-slate-950/45 z-50 noprint" onclick="toggleMenu(false)" aria-label="Tutup menu"></button>
+<main class="ml-64 p-7"><header class="flex justify-between mb-6"><div class="flex items-start gap-3"><button id="mobileMenu" type="button" class="hidden shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-700" onclick="toggleMenu(true)" aria-label="Buka menu">☰</button><div><p class="text-xs font-semibold uppercase tracking-wider text-blue-600 mb-1">PKK DIGITAL / DESA KEDIREN</p><h1 id="title" class="text-2xl font-extrabold">Dashboard</h1><p class="text-sm text-slate-500 mt-1">Administrasi Tim Penggerak PKK · Pokja IV</p></div></div><span id="role" class="text-sm"></span></header><div id="body"></div><div id="siteFooter" class="text-center text-xs text-slate-400 py-6">Developer &lt;&gt; <b>Supriyanto Abadi Jaya</b> · © <span id="copyrightYear"></span> PKK Digital · Desa Kediren</div></main></div>
+<div id="modal" class="hidden fixed inset-0 bg-black/40 z-50 overflow-auto p-4"><div class="card max-w-3xl mx-auto my-8"><div class="flex justify-between mb-4"><h2 id="mt" class="font-bold text-xl">Tambah Data</h2><button onclick="closeModal()">Tutup</button></div><form id="rf" class="grid grid-cols-2 gap-3"><div id="fields" class="contents"></div><div class="col-span-2 flex justify-end gap-2 pt-3"><button type="button" class="btn-secondary" onclick="closeModal()">Batal</button><button id="saveBtn" class="btn"><span class="save-label">Simpan Data</span></button></div></form></div></div>
+<div id="loading" class="hidden noprint"><div class="loading-card"><span class="spinner"></span><span id="loadingText">Memproses data...</span></div></div>
+<div id="confirmModal" class="confirm-backdrop noprint" role="dialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage"><div class="confirm-panel"><div class="confirm-icon" aria-hidden="true">⌫</div><h2 id="confirmTitle" class="confirm-title">Hapus Data Administrasi?</h2><p id="confirmMessage" class="confirm-message">Data yang dihapus tidak dapat dikembalikan. Apakah Anda yakin ingin melanjutkan?</p><div class="confirm-actions"><button type="button" class="confirm-cancel" onclick="resolveConfirm(false)">Batal</button><button type="button" id="confirmDeleteBtn" class="confirm-delete" onclick="resolveConfirm(true)">Ya, Hapus</button></div></div></div>
+<div id="toastStack" class="noprint" aria-live="polite" aria-atomic="false"></div>
 <script>
-document.getElementById('year').textContent=new Date().getFullYear();
-if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(err=>console.warn('SW:',err)));}
+let token=sessionStorage.getItem('pkk_digital_session')||'',user=null,mods=[],mod=null,data=[];
+const $=x=>document.getElementById(x);
+let loadingCount=0;
+let tableState={page:1,pageSize:10,sortField:'',sortDir:1,query:'',year:'',category:''};
+let formDirty=false;
+function setLoading(on,label='Memproses data...'){
+  loadingCount=Math.max(0,loadingCount+(on?1:-1));
+  if(on && $('loadingText')) $('loadingText').textContent=label;
+  if($('loading')) $('loading').classList.toggle('hidden',loadingCount===0);
+}
+let confirmResolver=null;
+function showToast(message,type='success',title){
+  const stack=$('toastStack');if(!stack)return;
+  const item=document.createElement('div');item.className=`toast ${type}`;
+  const heading=title||(type==='success'?'Berhasil':type==='error'?'Terjadi Kesalahan':'Informasi');
+  const mark=type==='success'?'✓':type==='error'?'!':'i';
+  item.innerHTML=`<div class="toast-mark">${mark}</div><div><strong>${esc(heading)}</strong><span>${esc(message)}</span></div>`;
+  stack.appendChild(item);setTimeout(()=>{item.style.opacity='0';item.style.transform='translateY(-5px)';setTimeout(()=>item.remove(),220)},3400);
+}
+function askConfirm(message='Data yang dihapus tidak dapat dikembalikan. Apakah Anda yakin ingin melanjutkan?'){
+  $('confirmMessage').textContent=message;$('confirmModal').classList.add('show');document.body.style.overflow='hidden';
+  return new Promise(resolve=>{confirmResolver=resolve;setTimeout(()=>$('confirmDeleteBtn').focus(),80)});
+}
+function resolveConfirm(answer){$('confirmModal').classList.remove('show');document.body.style.overflow='';if(confirmResolver){confirmResolver(!!answer);confirmResolver=null}}
+$('confirmModal').addEventListener('click',e=>{if(e.target===$('confirmModal'))resolveConfirm(false)});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('confirmModal').classList.contains('show'))resolveConfirm(false)});
+const call=(n,...a)=>new Promise(async (ok,no)=>{
+  setLoading(true,({login:'Memeriksa akun...',getCurrentUser:'Memuat profil...',getPokjaIVModules:'Memuat menu administrasi...',getPokjaIVSummary:'Memuat ringkasan...',getPokjaIVRecords:'Memuat data buku...',savePokjaIVRecord:'Menyimpan data...',deletePokjaIVRecord:'Menghapus data...',logout:'Keluar dari aplikasi...'}[n]||'Memproses data...'));
+  try{
+    const response=await fetch('/api/gas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({method:n,args:a})});
+    const payload=await response.json();
+    if(!response.ok||payload.error)throw new Error(payload.error||payload.message||'Permintaan gagal.');
+    ok(payload.result);
+  }catch(error){no(error)}finally{setLoading(false)}
+});
+function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('lf').onsubmit=async e=>{e.preventDefault();try{let r=await call('login',$('un').value,$('pw').value);if(!r.success)throw Error(r.message);token=r.token;sessionStorage.setItem('pkk_digital_session',token);user=r.user;await start()}catch(x){$('err').textContent=x.message}};
+async function start(){try{if($('copyrightYear'))$('copyrightYear').textContent=new Date().getFullYear();if(!user){let r=await call('getCurrentUser',token);if(!r.success)throw Error(r.message);user=r.user}mods=await call('getPokjaIVModules',token);$('login').classList.add('hidden');$('app').classList.remove('hidden');$('who').textContent=user.nama_lengkap;$('role').textContent=user.role;renderSidebar();dashboard()}catch(e){sessionStorage.removeItem('pkk_digital_session');token='';$('login').classList.remove('hidden')}}
+
+function moduleGroup(key){
+  if(['program','pelaksanaan','kegiatan','tamu','pengurus','penyuluhan','kader'].includes(key))return 'Program & Kelembagaan';
+  if(['kesehatan_ibu','kesehatan_bayi','posyandu_ilp','imunisasi','pemeriksaan_gratis'].includes(key))return 'Kesehatan Keluarga';
+  if(['lingkungan','perencanaan_sehat','tabungan','jaminan_kesehatan'].includes(key))return 'Lingkungan & Perencanaan';
+  if(key==='sakura')return 'Kehadiran';
+  return 'Lainnya';
+}
+function renderSidebar(){
+  const groups=[['Program & Kelembagaan','PROGRAM'],['Kesehatan Keluarga','KESEHATAN'],['Lingkungan & Perencanaan','LINGKUNGAN'],['Kehadiran','KEGIATAN']];
+  $('nav').innerHTML=groups.map(([label])=>{const list=mods.filter(m=>moduleGroup(m.key)===label);if(!list.length)return '';return `<div class="nav-section">${label}</div><div class="nav-group">${list.map(m=>`<button class="nav" data-nav-key="${esc(m.key)}" onclick="openMod('${esc(m.key)}')">${esc(m.title)}</button>`).join('')}</div>`}).join('');
+}
+function setSidebarActive(key){document.querySelectorAll('[data-nav-key]').forEach(b=>b.classList.toggle('active',b.dataset.navKey===key));document.querySelectorAll('#sidebar .nav[onclick="dashboard()"]')[0]?.classList.toggle('active',!key)}
+
+function toggleMenu(open){if(window.innerWidth>800)return;$('sidebar').classList.toggle('open',!!open);$('sidebarOverlay').classList.toggle('show',!!open);document.body.style.overflow=open?'hidden':''}
+function dashboard(){
+  toggleMenu(false);mod=null;setSidebarActive('');$('title').textContent='Dashboard Pokja IV';
+  Promise.all([call('getPokjaIVSummary',token),call('getPokjaIVDashboardData',token)]).then(([s,dash])=>{
+    const items=mods.map(m=>({key:m.key,title:m.title.replace(/^Buku /,''),count:Number(s[m.key]||0)}));
+    const total=items.reduce((a,x)=>a+x.count,0),max=Math.max(1,...items.map(x=>x.count));
+    const monthly=dash.monthly||[],maxMonth=Math.max(1,...monthly.map(x=>x.count));
+    const activity=dash.activity||[];
+    const isAdmin=String(user?.role||'').toUpperCase()==='ADMIN';
+    $('body').innerHTML=`
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-5">
+        <div class="card"><p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Format Administrasi</p><b class="block text-3xl font-extrabold text-blue-700 mt-3">${mods.length}</b><p class="text-xs text-slate-400 mt-1">Buku Pokja IV</p></div>
+        <div class="card"><p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Total Data</p><b class="block text-3xl font-extrabold text-blue-700 mt-3">${total}</b><p class="text-xs text-slate-400 mt-1">Seluruh administrasi</p></div>
+        <div class="card"><p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Buku Terisi</p><b class="block text-3xl font-extrabold text-blue-700 mt-3">${items.filter(x=>x.count>0).length}</b><p class="text-xs text-slate-400 mt-1">Dari ${mods.length} buku</p></div>
+        <div class="card"><p class="text-xs font-semibold uppercase tracking-wide text-slate-500">Aktivitas 30 Hari</p><b class="block text-3xl font-extrabold text-blue-700 mt-3">${dash.activity30||0}</b><p class="text-xs text-slate-400 mt-1">Catatan dibuat/diubah/dihapus</p></div>
+      </div>
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-5">
+        <div class="card"><div class="flex items-center justify-between gap-3 mb-5"><div><b class="text-base">Ringkasan 17 Buku</b><p class="text-xs text-slate-400 mt-1">Jumlah data tersimpan tiap buku</p></div><span class="count-pill">${total} data</span></div>
+          <div>${items.map(x=>`<div class="stat-row"><span class="truncate text-slate-600" title="${esc(x.title)}">${esc(x.title)}</span><div class="stat-bar"><span style="width:${Math.max(x.count?3:0,x.count/max*100)}%"></span></div><b class="text-right text-slate-700">${x.count}</b></div>`).join('')}</div>
+        </div>
+        <div class="card"><b class="text-base">Grafik Aktivitas Pokja IV</b><p class="text-xs text-slate-400 mt-1 mb-5">Jumlah perubahan data per bulan · 6 bulan terakhir</p>
+          <div class="flex items-end gap-3 h-44 border-b border-slate-200 px-1">${monthly.map(m=>`<div class="flex-1 flex flex-col items-center justify-end h-full gap-2"><b class="text-xs text-slate-600">${m.count}</b><div class="w-full max-w-10 rounded-t-lg bg-blue-500" style="height:${Math.max(m.count?5:0,m.count/maxMonth*100)}%"></div><span class="text-[10px] text-slate-500">${esc(m.label)}</span></div>`).join('')}</div>
+        </div>
+      </div>
+      <div class="card mb-5"><div class="flex items-center justify-between mb-3"><div><b class="text-base">Aktivitas Terakhir</b><p class="text-xs text-slate-400 mt-1">Riwayat perubahan data terbaru</p></div><span class="count-pill">${activity.length} aktivitas</span></div>
+        ${activity.length?`<div class="divide-y divide-slate-100">${activity.map(a=>`<div class="py-3 flex flex-wrap items-center justify-between gap-2"><div><b class="text-sm text-slate-700">${esc(a.actionLabel)}</b><p class="text-xs text-slate-500">${esc(a.details)} · ${esc(a.user)}</p></div><time class="text-xs text-slate-400">${esc(a.time)}</time></div>`).join('')}</div>`:'<p class="text-sm text-slate-400 py-5 text-center">Belum ada riwayat aktivitas.</p>'}
+      </div>
+      ${isAdmin?`<div class="card"><div class="flex flex-wrap items-center justify-between gap-3"><div><b class="text-base">Keamanan & Backup</b><p class="text-xs text-slate-400 mt-1">Backup manual atau atur backup otomatis harian ke Google Drive.</p></div><div class="flex flex-wrap gap-2"><button class="btn-secondary" onclick="runP4Backup()">Backup Sekarang</button><button class="btn" onclick="enableP4Backup()">Aktifkan Backup Harian</button></div></div><p id="backupStatus" class="text-xs text-slate-500 mt-3">Backup otomatis memerlukan izin akses Google Drive saat pertama kali dijalankan.</p></div>`:''}
+      `;
+  }).catch(e=>showToast(e.message||'Ringkasan tidak dapat dimuat.','error','Gagal memuat dashboard'))
+}
+async function runP4Backup(){try{const r=await call('createPokjaIVBackup',token);showToast(r.message||'Backup berhasil dibuat.');if($('backupStatus'))$('backupStatus').textContent=r.url?'File backup: '+r.url:'Backup selesai.'}catch(e){showToast(e.message||'Backup gagal.','error')}}
+async function enableP4Backup(){if(!await askConfirm('Aktifkan backup otomatis setiap hari pukul 02.00 ke Google Drive?'))return;try{const r=await call('setupPokjaIVDailyBackup',token);showToast(r.message||'Backup harian diaktifkan.');if($('backupStatus'))$('backupStatus').textContent=r.message}catch(e){showToast(e.message||'Pengaturan backup gagal.','error')}}
+async function openMod(k){toggleMenu(false);setSidebarActive(k);mod=mods.find(x=>x.key===k);if(!mod)return;$('title').textContent=mod.title;tableState={page:1,pageSize:10,sortField:'',sortDir:1,query:'',year:'',category:''};try{data=await call('getPokjaIVRecords',token,k);render()}catch(e){showToast(e.message||'Data buku tidak dapat dimuat.','error','Gagal memuat data')}}
+function render(){
+  $('body').innerHTML=`<div class="flex items-center justify-between gap-3 mb-3"><span class="count-pill" id="recordCount">${data.length} data tersimpan</span><span class="text-xs text-slate-400">Administrasi Pokja IV</span></div>
+  <div class="flex gap-2 mb-4 noprint flex-wrap"><button class="btn" onclick="formOpen()"><span class="text-lg leading-none">＋</span> Tambah Data</button><button class="btn-secondary" onclick="printData('asli')">Cetak Format Asli</button><button class="btn-secondary" onclick="printData('modern')">Cetak Modern</button><button class="btn-secondary" onclick="printData('pdf')">Simpan PDF Buku Ini</button><button class="btn-secondary" onclick="printAllBooksPDF()">Simpan PDF Gabungan (17 Buku)</button></div>
+  <div class="table-toolbar noprint"><input id="q" class="field max-w-sm" placeholder="Cari cepat di semua kolom..." value="${esc(tableState.query)}" oninput="filter()"><select id="yearFilter" class="field filter-select" aria-label="Filter tahun" onchange="applyTableFilters()"><option value="">Semua tahun</option>${getYearOptions().map(y=>`<option value="${y}" ${tableState.year===y?'selected':''}>${y}</option>`).join('')}</select>${getCategoryField()?`<select id="categoryFilter" class="field filter-select" aria-label="Filter kategori" onchange="applyTableFilters()"><option value="">Semua kategori</option>${getCategoryOptions().map(v=>`<option value="${esc(v)}" ${tableState.category===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`:''}<div class="flex items-center gap-2"><span class="table-meta" id="tableInfo"></span><label class="table-meta">Baris <select id="pageSize" onchange="changePageSize(this.value)"><option value="10" ${tableState.pageSize===10?'selected':''}>10</option><option value="25" ${tableState.pageSize===25?'selected':''}>25</option><option value="50" ${tableState.pageSize===50?'selected':''}>50</option><option value="100" ${tableState.pageSize===100?'selected':''}>100</option></select></label></div></div>
+  <div class="card scroll"><table><thead><tr>${mod.fields.map(f=>`<th><button class="table-sort" onclick="sortBy('${esc(f).replace(/'/g,"\\'")}')">${esc(f)} ${tableState.sortField===f?(tableState.sortDir===1?'↑':'↓'):'↕'}</button></th>`).join('')}<th class="noprint">Aksi</th></tr></thead><tbody id="rows"></tbody></table></div>
+  <div class="flex items-center justify-between gap-3 mt-3 noprint flex-wrap"><span class="table-meta" id="pageSummary"></span><div class="pager" id="pager"></div></div>
+  <p class="text-xs text-slate-400 mt-3">Gunakan tombol aksi untuk mengubah atau menghapus catatan. Data tersimpan pada buku administrasi yang dipilih.</p>`;
+  drawTable();
+}
+function getYearOptions(){const years=new Set();data.forEach(r=>mod.fields.forEach(f=>{const v=String(r[f]??'');if(/tahun|tanggal|tgl|date/i.test(f)){(v.match(/20\d{2}/g)||[]).forEach(y=>years.add(y))}}));if(!years.size)data.forEach(r=>mod.fields.forEach(f=>{(String(r[f]??'').match(/20\d{2}/g)||[]).forEach(y=>years.add(y))}));return [...years].sort().reverse()}
+function getCategoryField(){return mod?.fields?.find(f=>/kategori|category|jenis|status/i.test(f))||''}
+function getCategoryOptions(){const f=getCategoryField();return f?[...new Set(data.map(r=>String(r[f]??'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id')):[]}
+function rowHasYear(r,year){return mod.fields.some(f=>{const v=String(r[f]??'');return (/tahun|tanggal|tgl|date/i.test(f)?v.includes(year):false)})||mod.fields.some(f=>String(r[f]??'').includes(year))}
+function filteredRows(){let q=String(tableState.query||'').toLowerCase().trim(),catField=getCategoryField();let a=data.filter(r=>(!q||mod.fields.some(f=>String(r[f]??'').toLowerCase().includes(q)))&&(!tableState.year||rowHasYear(r,tableState.year))&&(!tableState.category||String(r[catField]??'')===tableState.category));if(tableState.sortField){let f=tableState.sortField;a.sort((x,y)=>{let a=x[f]??'',b=y[f]??'',na=Number(a),nb=Number(b);let c=a!==''&&b!==''&&Number.isFinite(na)&&Number.isFinite(nb)?na-nb:String(a).localeCompare(String(b),'id',{numeric:true,sensitivity:'base'});return c*tableState.sortDir})}return a}
+
+function drawTable(){let a=filteredRows(),pages=Math.max(1,Math.ceil(a.length/tableState.pageSize));tableState.page=Math.min(tableState.page,pages);let from=(tableState.page-1)*tableState.pageSize,shown=a.slice(from,from+tableState.pageSize);$('rows').innerHTML=shown.length?shown.map(r=>`<tr>${mod.fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}<td class="noprint"><div class="crud-actions"><button class="btn-icon" title="Edit data" aria-label="Edit data" onclick="edit('${esc(r.record_id)}')">✎</button><button class="btn-danger" title="Hapus data" aria-label="Hapus data" onclick="del('${esc(r.record_id)}')">Hapus</button></div></td></tr>`).join(''):`<tr><td colspan="${mod.fields.length+1}" class="empty-state"><div class="empty-icon">▤</div><b class="block text-slate-600 mb-1">${tableState.query?'Data tidak ditemukan':'Belum ada data'}</b><span>${tableState.query?'Coba kata kunci pencarian lain.':'Tekan Tambah Data untuk membuat catatan pertama.'}</span></td></tr>`;
+  $('recordCount').textContent=`${a.length} dari ${data.length} data`; $('tableInfo').textContent=a.length?`Menampilkan ${from+1}–${Math.min(from+tableState.pageSize,a.length)} dari ${a.length}`:'Tidak ada data';$('pageSummary').textContent=`Halaman ${tableState.page} dari ${pages}`;
+  $('pager').innerHTML=`<button ${tableState.page<=1?'disabled':''} onclick="goPage(${tableState.page-1})">‹ Sebelumnya</button><button class="current">${tableState.page}</button><button ${tableState.page>=pages?'disabled':''} onclick="goPage(${tableState.page+1})">Berikutnya ›</button>`;
+}
+function filter(){tableState.query=$('q').value;tableState.page=1;drawTable()}
+function applyTableFilters(){tableState.year=$('yearFilter')?.value||'';tableState.category=$('categoryFilter')?.value||'';tableState.page=1;drawTable()}
+function sortBy(f){if(tableState.sortField===f)tableState.sortDir*=-1;else{tableState.sortField=f;tableState.sortDir=1}drawTable();renderSortHeaders()}
+function renderSortHeaders(){let hs=document.querySelectorAll('thead .table-sort');hs.forEach((b,i)=>{let f=mod.fields[i];b.innerHTML=`${esc(f)} ${tableState.sortField===f?(tableState.sortDir===1?'↑':'↓'):'↕'}`})}
+function goPage(p){tableState.page=p;drawTable()}
+function changePageSize(v){tableState.pageSize=Number(v)||10;tableState.page=1;drawTable()}
+const PROGRAM_MONTHS=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+function getProgramMonths(value){
+  const raw=String(value??'').trim();if(!raw)return [];
+  return PROGRAM_MONTHS.filter((m,i)=>new RegExp('(^|[^a-z])('+m+'|'+(i+1)+'|0'+(i+1)+')([^a-z]|$)','i').test(raw));
+}
+function syncProgramMonths(){
+  const wrap=$('programMonthPicker');if(!wrap)return;
+  const chosen=[...wrap.querySelectorAll('input[type=checkbox]:checked')].map(x=>x.value);
+  const hidden=$('programMonthsValue');if(hidden)hidden.value=chosen.join(', ');
+}
+function formContext(){
+  const notes={
+    program:'Isi program pokok, program Pokja IV, kegiatan, sasaran, lokasi, mitra, indikator keberhasilan, dan pilih bulan pelaksanaan.',
+    pelaksanaan:'Catat pelaksanaan program secara rinci, termasuk tujuan, sasaran, pelaksana, waktu, lokasi, output, outcome, serta monitoring dan evaluasi.',
+    kegiatan:'Catat identitas pelaksana kegiatan, tanggal dan tempat kegiatan, uraian kegiatan, serta keterangannya.',
+    tamu:'Catat identitas tamu, alamat atau instansi, tanggal kunjungan, keperluan, nomor telepon, dan tanda tangan/nama penanda tangan.',
+    pengurus:'Isi identitas pengurus, jabatan, keterangan, dan periode kepengurusan.',
+    penyuluhan:'Catat kegiatan penyuluhan, waktu, sasaran, jumlah peserta, serta jumlah kader laki-laki dan perempuan yang hadir.',
+    kader:'Isi nama kader dan bidang kader kesehatan yang dimiliki atau diikuti.',
+    kesehatan_ibu:'Isi catatan kesehatan ibu sesuai kolom yang tersedia. Batasi akses dan pastikan data dicatat dengan benar.',
+    kesehatan_bayi:'Isi identitas ibu dan bayi, jenis kelamin, tanggal lahir, status akta, serta data meninggal bila ada.',
+    posyandu_ilp:'Catat jenis layanan, waktu pelaksanaan, jumlah pengunjung menurut kelompok umur/jenis kelamin, dan hasil kegiatan.',
+    imunisasi:'Isi wilayah RT/RW dan jumlah sasaran imunisasi pada setiap jenis vaksin menurut jenis kelamin.',
+    pemeriksaan_gratis:'Catat wilayah, tanggal pemeriksaan, jumlah warga yang diperiksa menurut kelompok, jumlah penderita TBC, dan keterangan.',
+    lingkungan:'Catat wilayah dan jumlah rumah menurut fasilitas sanitasi serta sumber air yang digunakan.',
+    perencanaan_sehat:'Catat wilayah, jumlah PUS/WUS, serta jumlah akseptor menurut jenis kontrasepsi.',
+    tabungan:'Catat nama kepala keluarga, alamat, jenis tabungan, dan keterangan.',
+    jaminan_kesehatan:'Catat nama kepala keluarga, alamat, kepesertaan menurut jenis asuransi, dan keterangan.',
+    sakura:'Pilih bulan, lalu isi jumlah peserta menurut kelompok usia dan jenis kelamin serta data ibu menyusui/hamil.'
+  };
+  return notes[mod?.key]||'Lengkapi data sesuai kolom buku administrasi yang dipilih.';
+}
+function fieldControl(f,r){
+  const label=f.trim(),low=label.toLowerCase(),val=String(r[f]??''),isNo=low==='no';
+  if(isNo)return `<label class="form-item"><span class="form-label">${esc(label)}</span><input class="field bg-slate-100" type="text" value="${esc(val||'Otomatis saat disimpan')}" readonly><small class="form-help">Nomor urut dibuat otomatis oleh sistem.</small></label>`;
+  if(mod?.key==='program'&&low==='waktu pelaksanaan'){
+    const selected=getProgramMonths(val);
+    const picker=`<input type="hidden" id="programMonthsValue" name="${esc(f)}" value="${esc(selected.join(', '))}"><div id="programMonthPicker" class="month-picker">${PROGRAM_MONTHS.map(m=>`<label class="month-option"><input type="checkbox" value="${m}" ${selected.includes(m)?'checked':''} onchange="syncProgramMonths()"><span>${m}</span></label>`).join('')}</div><small class="form-help">Pilih satu atau beberapa bulan pelaksanaan.</small>`;
+    return `<div class="form-item span-2"><span class="form-label">${esc(label)}</span>${picker}</div>`;
+  }
+  let type='text',control='',help='',opts=null,wide=false,required=false;
+  const dateField=/^(tanggal|tgl)(\s|$)/i.test(label)||/periode (mulai|selesai)/i.test(low)||low.includes('tanggal lahir')||low.includes('tanggal meninggal');
+  const numericField=/(jumlah|peserta|hadir|bayi|balita|remaja|lansia|dewasa|akseptor|penderita|rumah memiliki|menggunakan|tabungan bank|tabungan perhiasan|tabungan ternak|bpjs non pbi|bpjs pbi|swasta|hepatitis|\bbcg\b|\bdpt\b|polio|campak|usia [0-9]|\bbbl\b|\bapras\b|\bpus\b|\bwus\b)/i.test(low)||/\s[lp]$/.test(low);
+  const longField=/(uraian|keterangan|keperluan|alamat|hasil kegiatan|indikator keberhasilan|monitoring|evaluasi|tujuan kegiatan|sebab meninggal|mitra|sasaran|ibu menyusui|ibu hamil)/i.test(low);
+  if(dateField)type='date';
+  else if(numericField)type='number';
+  if(type==='number')help='Masukkan angka saja. Jika tidak ada, isi 0 atau biarkan kosong.';
+  if(low==='jenis kelamin')opts=['L','P'];
+  else if(low.includes('status (hamil'))opts=['Hamil','Melahirkan','Nifas'];
+  else if(low.includes('bpjs (punya/tidak'))opts=['Punya','Tidak'];
+  else if(low.includes('akta ada/tidak'))opts=['Ada','Tidak'];
+  else if(low==='bulan')opts=PROGRAM_MONTHS;
+  else if(low.includes('tanda tangan'))help='Ketik nama penanda tangan atau keterangan tanda tangan.';
+  if(longField){wide=true;}
+  if(/uraian|keterangan|keperluan|alamat|hasil kegiatan|indikator keberhasilan|monitoring dan evaluasi|tujuan kegiatan|sebab meninggal|ibu menyusui|ibu hamil/i.test(low)){
+    control=`<textarea class="field mt-1 form-textarea" name="${esc(f)}" rows="${/uraian|monitoring|indikator|hasil kegiatan|tujuan kegiatan/i.test(low)?3:2}" placeholder="Isi ${esc(label.toLowerCase())}...">${esc(val)}</textarea>`;
+  }else if(opts){
+    control=`<select class="field mt-1" name="${esc(f)}"><option value="">Pilih ${esc(label.toLowerCase())}</option>${opts.map(o=>`<option value="${esc(o)}" ${val===o?'selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  }else{
+    const extra=type==='number'?'min="0" step="1" inputmode="numeric"':'';
+    control=`<input class="field mt-1" type="${type}" ${extra} name="${esc(f)}" value="${esc(val)}" placeholder="${type==='date'?'Pilih tanggal':type==='number'?'Masukkan jumlah':`Isi ${esc(label.toLowerCase())}`}">`;
+  }
+  return `<label class="form-item ${wide?'span-2':''}"><span class="form-label">${esc(label)}</span>${control}${help?`<small class="form-help">${help}</small>`:''}<small class="form-error" data-error="${esc(f)}"></small></label>`;
+}
+function formOpen(r={}){$('mt').textContent=r.record_id?'Ubah '+mod.title:'Tambah '+mod.title;$('saveBtn').querySelector('.save-label').textContent=r.record_id?'Simpan Perubahan':'Simpan Data';$('rf').dataset.id=r.record_id||'';$('fields').innerHTML=`<div class="col-span-2 form-intro">${esc(formContext())}</div>`+mod.fields.map(f=>fieldControl(f,r)).join('');formDirty=false;$('modal').classList.remove('hidden');setTimeout(()=>{let first=$('fields').querySelector('input:not([readonly]),select,textarea');if(first)first.focus()},50)}
+function edit(id){formOpen(data.find(r=>r.record_id===id)||{})}
+async function closeModal(){if(formDirty){const ok=await askConfirm('Perubahan pada formulir belum disimpan. Tutup formulir dan buang perubahan?');if(!ok)return} $('modal').classList.add('hidden');formDirty=false}
+$('fields').addEventListener('input',()=>{formDirty=true});$('fields').addEventListener('change',()=>{formDirty=true});
+$('rf').onsubmit=async e=>{e.preventDefault();let o={record_id:e.target.dataset.id};new FormData(e.target).forEach((v,k)=>o[k]=v);let hasValue=mod.fields.some(f=>f.toLowerCase()!=='no'&&String(o[f]||'').trim());if(!hasValue){showToast('Isi setidaknya satu kolom sebelum menyimpan.','error','Form belum lengkap');return}let b=$('saveBtn');b.disabled=true;try{let res=await call('savePokjaIVRecord',token,mod.key,o);$('modal').classList.add('hidden');formDirty=false;await openMod(mod.key);showToast((res&&res.message)||'Data berhasil disimpan.','success',o.record_id?'Perubahan disimpan':'Data ditambahkan')}catch(x){showToast(x.message||'Data gagal disimpan.','error','Gagal menyimpan')}finally{b.disabled=false}}
+async function del(id){const yes=await askConfirm('Data yang dihapus tidak dapat dikembalikan. Pastikan Anda memilih catatan yang benar sebelum melanjutkan.');if(!yes)return;const btn=$('confirmDeleteBtn');btn.disabled=true;btn.textContent='Menghapus...';try{await call('deletePokjaIVRecord',token,mod.key,id);await openMod(mod.key);showToast('Data administrasi berhasil dihapus.','success','Data dihapus')}catch(e){showToast(e.message||'Data gagal dihapus.','error','Gagal menghapus')}finally{btn.disabled=false;btn.textContent='Ya, Hapus'}}
+function buildSourceStyleTable(key,fields,rows){
+  // Buku Kesehatan Bayi: kelompok Jenis Kelamin dan Akta sesuai dokumen Word.
+  if(key==='kesehatan_bayi'){
+    const top=`<tr>
+      <th rowspan="2">No</th><th rowspan="2">Nama Ibu</th><th rowspan="2">Nama Suami</th>
+      <th rowspan="2">Alamat</th><th rowspan="2">Nama Bayi</th>
+      <th colspan="2">Jenis Kelamin</th><th rowspan="2">Tanggal Lahir</th>
+      <th colspan="2">Akta</th><th rowspan="2">Tanggal Meninggal</th><th rowspan="2">Sebab Meninggal</th>
+    </tr>`;
+    const second=`<tr><th>L</th><th>P</th><th>Ada</th><th>Tidak</th></tr>`;
+    const body=rows.map(r=>`<tr>${fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}</tr>`).join('');
+    const blanks=Array.from({length:Math.max(0,17-rows.length)},()=>`<tr class="blank-row">${fields.map(()=>'<td>&nbsp;</td>').join('')}</tr>`).join('');
+    return `<table class="print-table bayi-table"><thead>${top}${second}</thead><tbody>${body}${blanks}</tbody></table>`;
+  }
+  // Buku Posyandu ILP: header tiga tingkat mengikuti kelompok jumlah pengunjung.
+  if(key==='posyandu_ilp'){
+    const top=`<tr><th rowspan="3">No</th><th rowspan="3">Nama Kegiatan / Jenis Layanan</th><th rowspan="3">Waktu Pelaksanaan</th><th colspan="14">Jumlah Pengunjung</th><th rowspan="3">Hasil Kegiatan</th></tr>`;
+    const second=`<tr><th rowspan="2">Bayi</th><th rowspan="2">Balita</th><th colspan="2">Anak Pra Sekolah</th><th colspan="2">Remaja</th><th rowspan="2">Bumil</th><th rowspan="2">Bulin</th><th rowspan="2">Bufas</th><th rowspan="2">Buteki</th><th colspan="2">Dewasa</th><th colspan="2">Lansia</th></tr>`;
+    const third=`<tr><th>L</th><th>P</th><th>L</th><th>P</th><th>L</th><th>P</th><th>L</th><th>P</th></tr>`;
+    const body=rows.map(r=>`<tr>${fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}</tr>`).join('');
+    const blanks=Array.from({length:Math.max(0,17-rows.length)},()=>`<tr class="blank-row">${fields.map(()=>'<td>&nbsp;</td>').join('')}</tr>`).join('');
+    return `<table class="print-table posyandu-table"><thead>${top}${second}${third}</thead><tbody>${body}${blanks}</tbody></table>`;
+  }
+  // Buku Pemeriksaan Kesehatan Gratis: kelompok kolom jumlah yang diperiksa.
+  if(key==='pemeriksaan_gratis'){
+    const top=`<tr><th rowspan="2">No</th><th rowspan="2">RT/RW/Dusun</th><th rowspan="2">Tanggal Pelaksanaan</th><th colspan="6">Jumlah Yang Diperiksa</th><th rowspan="2">Jumlah Penderita TBC</th><th rowspan="2">Keterangan</th></tr>`;
+    const second=`<tr><th>BBL</th><th>Balita</th><th>Apras</th><th>Anak Sekolah dan Remaja</th><th>Dewasa</th><th>Lansia</th></tr>`;
+    const body=rows.map(r=>`<tr>${fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}</tr>`).join('');
+    const blanks=Array.from({length:Math.max(0,17-rows.length)},()=>`<tr class="blank-row">${fields.map(()=>'<td>&nbsp;</td>').join('')}</tr>`).join('');
+    return `<table class="print-table pemeriksaan-table"><thead>${top}${second}</thead><tbody>${body}${blanks}</tbody></table>`;
+  }
+  // Buku Kader Kesehatan: header bertingkat sesuai format Word sumber.
+  if(key==='kader'){
+    const colWidths=['4%','24%','20%','8%','8%','8%','8%','10%','10%'];
+    const top=`<tr><th rowspan="3">No</th><th rowspan="3">Nama Kader</th><th colspan="6">JENIS KADER</th><th rowspan="3">Keterangan</th></tr>`;
+    const second=`<tr><th rowspan="2">KADER KESEHATAN</th><th colspan="5">YANG ADA</th></tr>`;
+    const third=`<tr><th>GIZI</th><th>KESLING</th><th>PHBS</th><th>KB</th><th>LAIN-LAIN</th></tr>`;
+    const body=rows.map(r=>`<tr>${fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}</tr>`).join('');
+    const blanks=Math.max(0,17-rows.length);
+    const blankRows=Array.from({length:blanks},()=>`<tr class="blank-row">${fields.map(()=>'<td>&nbsp;</td>').join('')}</tr>`).join('');
+    const total=`<tr class="total-row"><td></td><td><b>TOTAL</b></td>${fields.slice(2).map(()=>'<td></td>').join('')}</tr>`;
+    return `<table class="print-table kader-table"><colgroup>${colWidths.map(w=>`<col style="width:${w}">`).join('')}</colgroup><thead>${top}${second}${third}</thead><tbody>${body}${blankRows}${total}</tbody></table>`;
+  }
+  // Buku Imunisasi: header empat tingkat mengikuti susunan dokumen Word sumber.
+  if(key==='imunisasi'){
+    const f=(name)=>fields.find(x=>x.toLowerCase()===name.toLowerCase());
+    const groups=[
+      ['Hepatitis B',['Hepatitis B L','Hepatitis B P']],
+      ['BCG',['BCG L','BCG P']],
+      ['DPT-HB-HIB',['DPT-HB-HIB I L','DPT-HB-HIB I P','DPT-HB-HIB II L','DPT-HB-HIB II P','DPT-HB-HIB III L','DPT-HB-HIB III P']],
+      ['POLIO',['Polio I L','Polio I P','Polio II L','Polio II P','Polio III L','Polio III P','Polio IV L','Polio IV P']],
+      ['POLIO SUNTIK',['Polio Suntik L','Polio Suntik P']],
+      ['CAMPAK AKHIR',['Campak Akhir L','Campak Akhir P']]
+    ];
+    const doseGroups=[['I',['DPT-HB-HIB I L','DPT-HB-HIB I P']],['II',['DPT-HB-HIB II L','DPT-HB-HIB II P']],['III',['DPT-HB-HIB III L','DPT-HB-HIB III P']],['I',['Polio I L','Polio I P']],['II',['Polio II L','Polio II P']],['III',['Polio III L','Polio III P']],['IV',['Polio IV L','Polio IV P']]];
+    const th=(label,attrs='')=>`<th ${attrs}>${label}</th>`;
+    const top=`<tr>${th('No','rowspan="4"')}${th('RT / RW','rowspan="4"')}${th('IMUNISASI DASAR LENGKAP','colspan="22"')}</tr>`;
+    const second=`<tr>${th('Hepatitis B','colspan="2" rowspan="3"')}${th('BCG','colspan="2" rowspan="3"')}${th('DPT-HB-HIB','colspan="6"')}${th('POLIO','colspan="8"')}${th('POLIO<br>SUNTIK','colspan="2" rowspan="3"')}${th('CAMPAK<br>AKHIR','colspan="2" rowspan="3"')}</tr>`;
+    const third=`<tr>${doseGroups.map(([d,cols],i)=>`<th colspan="2">${d}</th>`).join('')}</tr>`;
+    const fourth=`<tr>${doseGroups.flatMap(()=>[th('L'),th('P')]).join('')}</tr>`;
+    const body=rows.map(r=>`<tr>${fields.map(name=>`<td>${esc(r[name])}</td>`).join('')}</tr>`).join('');
+    const blanks=Math.max(0,17-rows.length);
+    const blankRows=Array.from({length:blanks},()=>`<tr class="blank-row">${fields.map(()=>'<td>&nbsp;</td>').join('')}</tr>`).join('');
+    const sum=fields.map((name,i)=>{
+      if(i===0)return '<td>&nbsp;</td>';
+      if(i===1)return '<td><b>JUMLAH</b></td>';
+      const total=rows.reduce((n,r)=>n+(Number(String(r[name]??'').replace(',','.'))||0),0);
+      return `<td>${total||''}</td>`;
+    }).join('');
+    return `<table class="print-table imunisasi-table"><colgroup>${fields.map((name,i)=>`<col style="width:${i===0?'2.2%':i===1?'8%':'4%'}">`).join('')}</colgroup><thead>${top}${second}${third}${fourth}</thead><tbody>${body}${blankRows}</tbody><tfoot><tr>${sum}</tr></tfoot></table>`;
+  }
+  // Buku Penyuluhan: kolom kader L/P diberi lebar seimbang agar label tidak terpotong/vertikal.
+  if(key==='penyuluhan'){
+    const widths=['4%','33%','17%','24%','9%','6.5%','6.5%'];
+    const colgroup=`<colgroup>${widths.map(w=>`<col style="width:${w}">`).join('')}</colgroup>`;
+    const top=`<tr>
+      <th rowspan="2">No</th>
+      <th rowspan="2">Nama Kegiatan</th>
+      <th rowspan="2">Waktu Pelaksanaan</th>
+      <th rowspan="2">Sasaran</th>
+      <th rowspan="2">Jumlah Peserta</th>
+      <th colspan="2">JUMLAH KADER YANG HADIR</th>
+    </tr>`;
+    const second=`<tr><th>L</th><th>P</th></tr>`;
+    const body=rows.map(r=>`<tr>${fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}</tr>`).join('');
+    const blanks=Array.from({length:Math.max(0,17-rows.length)},()=>`<tr class="blank-row">${fields.map(()=>'<td>&nbsp;</td>').join('')}</tr>`).join('');
+    return `<table class="print-table penyuluhan-table">${colgroup}<thead>${top}${second}</thead><tbody>${body}${blanks}</tbody></table>`;
+  }
+  // Header bertingkat mengikuti kelompok judul yang tampak pada dokumen Word sumber.
+  const groups={
+    kegiatan:[['Kegiatan',['Tanggal','Tempat','Uraian']]],
+    penyuluhan:[['Jumlah Kader yang Hadir',['Jumlah Kader Hadir L','Jumlah Kader Hadir P']]],
+    imunisasi:[['Imunisasi Dasar Lengkap',fields.filter(f=>!/^No$|^RT \/ RW$/i.test(f))]],
+    pemeriksaan_gratis:[['Jumlah Yang Diperiksa',['BBL','Balita','Apras','Anak Sekolah dan Remaja','Dewasa','Lansia']]],
+    lingkungan:[['Jumlah Rumah Memiliki',['Rumah Memiliki Jamban','Rumah Memiliki SPAL','Rumah Memiliki TPS']],['Jumlah Rumah Yang Menggunakan',['Menggunakan PDAM','Menggunakan Sumur','Menggunakan Lain-lain (Sungai)','Menggunakan MCK']]],
+    perencanaan_sehat:[['Akseptor MKJP',['Akseptor MOP','Akseptor MOW','Akseptor IUD','Akseptor Implant']],['Akseptor Non MKJP',['Akseptor Suntik','Akseptor Pil','Akseptor Kondom','Akseptor Lain-lain']]],
+    tabungan:[['Tabungan',['Tabungan Bank','Tabungan Perhiasan','Tabungan Ternak']]],
+    jaminan_kesehatan:[['Jenis Asuransi',['BPJS Non PBI','BPJS PBI','Swasta']]]
+  };
+  const defs=groups[key]||[];
+  const grouped=new Map();defs.forEach(([name,cols])=>cols.forEach(f=>{if(fields.includes(f))grouped.set(f,name)}));
+  const hasGroups=grouped.size>0;
+  let head='';
+  if(!hasGroups){head=`<tr>${fields.map(f=>`<th>${esc(f)}</th>`).join('')}</tr>`;}
+  else{
+    const seen=new Set(),top=[];
+    fields.forEach(f=>{const g=grouped.get(f);if(!g){top.push(`<th rowspan="2">${esc(f)}</th>`);return;}if(seen.has(g))return;seen.add(g);const cols=fields.filter(x=>grouped.get(x)===g);top.push(`<th colspan="${cols.length}">${esc(g)}</th>`)});
+    const second=fields.filter(f=>grouped.has(f)).map(f=>`<th>${esc(f)}</th>`).join('');
+    head=`<tr>${top.join('')}</tr><tr>${second}</tr>`;
+  }
+  let body=rows.map(r=>`<tr>${fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}</tr>`).join('');
+  // Semua buku diberi ruang pencatatan hingga 17 baris per halaman.
+  // Jika data lebih dari 17, seluruh data tetap dicetak dan berlanjut ke halaman berikutnya.
+  const minRows=17;
+  const blanks=Math.max(0,minRows-rows.length);
+  body+=Array.from({length:blanks},()=>`<tr class="blank-row">${fields.map(()=>'<td>&nbsp;</td>').join('')}</tr>`).join('');
+  if(key==='kegiatan'){
+    const widths={'No':'5%','Nama':'17%','Jabatan':'13%','Tanggal':'12%','Tempat':'13%','Uraian':'28%','Keterangan':'12%'};
+    const colgroup=`<colgroup>${fields.map(f=>`<col style="width:${widths[f]||'auto'}">`).join('')}</colgroup>`;
+    return `<table class="print-table kegiatan-table">${colgroup}<thead>${head}</thead><tbody>${body}</tbody></table>`;
+  }
+  return `<table class="print-table"><thead>${head}</thead><tbody>${body}</tbody></table>`;
+}
+function buildPrintSection(book,rows,mode,includeSignature=true){
+  const original=mode==='asli';
+  const isProgram=book.key==='program';
+  const signature=`<div class="print-signatures"><div>Mengetahui<br>Ketua TP PKK Desa Kediren<br><br><br><b>Ny. SUNARSIH WAKINO</b></div><div>Kediren, ____________________<br>Ketua POKJA IV<br><br><br><b>PRAMUNGATUN</b></div></div>`;
+  const title=esc(book.title.toUpperCase()),sub='TIM PENGGERAK PKK DESA KEDIREN KECAMATAN LEMBEYAN';
+  let table='';
+  if(isProgram){
+    const monthField=book.fields.find(f=>f.trim().toLowerCase()==='waktu pelaksanaan')||'Waktu Pelaksanaan';
+    const other=(label)=>book.fields.find(f=>f.trim().toLowerCase()===label.toLowerCase())||label;
+    const keys={no:other('No'),pokok:other('Program Pokok PKK'),pokja:other('Program Pokja IV'),kegiatan:other('Kegiatan'),sasaran:other('Sasaran'),lokasi:other('Lokasi'),mitra:other('Mitra'),indikator:other('Indikator Keberhasilan'),ket:other('Keterangan')};
+    const cell=(r,k)=>esc(r?.[k]??'');
+    const programRows=rows.map(r=>{const months=getProgramMonths(r[monthField]);return `<tr><td>${cell(r,keys.no)}</td><td>${cell(r,keys.pokok)}</td><td>${cell(r,keys.pokja)}</td><td>${cell(r,keys.kegiatan)}</td><td>${cell(r,keys.sasaran)}</td><td>${cell(r,keys.lokasi)}</td>${PROGRAM_MONTHS.map(m=>`<td class="month-cell">${months.includes(m)?'✓':''}</td>`).join('')}<td>${cell(r,keys.mitra)}</td><td>${cell(r,keys.indikator)}</td><td>${cell(r,keys.ket)}</td></tr>`}).join('');
+    const blankCount=Math.max(0,17-rows.length);
+    const blanks=Array.from({length:blankCount},()=>'<tr class="blank-row">'+Array.from({length:21},()=>'<td>&nbsp;</td>').join('')+'</tr>').join('');
+    table=`<table class="program-table"><colgroup><col class="c-no"><col class="c-pokok"><col class="c-pokja"><col class="c-kegiatan"><col class="c-sasaran"><col class="c-lokasi">${PROGRAM_MONTHS.map(()=>'<col class="c-month">').join('')}<col class="c-mitra"><col class="c-indikator"><col class="c-ket"></colgroup><thead><tr><th rowspan="2">No</th><th rowspan="2">Program<br>Pokok PKK</th><th rowspan="2">Program<br>Pokja IV</th><th rowspan="2">Kegiatan</th><th rowspan="2">Sasaran</th><th rowspan="2">Lokasi</th><th colspan="12">Waktu Pelaksanaan</th><th rowspan="2">Mitra</th><th rowspan="2">Indikator<br>Keberhasilan</th><th rowspan="2">Keterangan</th></tr><tr>${PROGRAM_MONTHS.map((m,i)=>`<th title="${m}">${i+1}</th>`).join('')}</tr></thead><tbody>${programRows}${blanks}</tbody></table>`;
+  }else{
+    table=buildSourceStyleTable(book.key,book.fields,rows);
+  }
+
+  return `<section class="print-wrap"><h2 class="print-title">${isProgram?'BUKU PROGRAM KERJA':title}</h2><p class="print-sub">${sub}</p><p class="print-date">Tahun: ____________________</p>${table}${includeSignature?signature:''}<p class="print-note">Developer &lt;&gt; Supriyanto Abadi Jaya · © ${new Date().getFullYear()} PKK Digital · Desa Kediren</p></section>`;
+}
+function printDocument(sections,title){
+ const w=open('','_blank');if(!w){showToast('Izinkan pop-up untuk menyimpan PDF.','error','Pop-up diblokir');return}
+ const html=`<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title><style>
+ @page{size:330mm 215mm;margin:8mm 9mm}*{box-sizing:border-box}body{font:10px Arial,sans-serif;color:#111;margin:0}.print-wrap{width:100%}.print-wrap+.print-wrap{break-before:page;page-break-before:always}
+ .print-title{text-align:left;font-size:16px;font-weight:700;line-height:1.2;margin:0 0 5px}.print-sub{text-align:left;font-size:12px;font-weight:600;margin:0 0 9px}.print-date{text-align:right;font-size:11px;margin:0 0 6px}
+ .print-table{border-collapse:collapse;width:100%;table-layout:auto;word-break:normal}.print-table th:first-child,.print-table td:first-child{width:7mm;min-width:7mm;max-width:7mm;padding-left:1px;padding-right:1px}.print-table thead th{min-height:9mm;vertical-align:middle;white-space:normal}.print-table tbody tr{height:7mm;min-height:7mm}.print-table th,.print-table td{border:1px solid #222;padding:4px 3px;font-size:12px;line-height:1.2;vertical-align:middle;overflow-wrap:anywhere}.print-table th{text-align:center;background:#f1f5f9;font-weight:700}.print-table tbody td{height:7mm;min-height:7mm;padding-top:1px;padding-bottom:1px}.print-table .blank-row td{height:7mm;padding:3px}
+ .kegiatan-table th,.kegiatan-table td{padding:5px 4px;font-size:12px}.kegiatan-table thead th{height:9mm}.kegiatan-table tbody td{height:7mm}.kegiatan-table tbody td:nth-child(1),.kegiatan-table tbody td:nth-child(4){text-align:center}.kegiatan-table tbody td:nth-child(6),.kegiatan-table tbody td:nth-child(7){vertical-align:top}.kegiatan-table .blank-row td{height:7mm}
+ .program-table{border-collapse:collapse;width:100%;table-layout:fixed}.program-table th,.program-table td{border:1px solid #111;padding:4px 3px;font-size:12px;line-height:1.15;vertical-align:middle;overflow-wrap:anywhere}.program-table th{text-align:center;font-weight:700}.program-table td{text-align:left;height:7mm;min-height:7mm;padding-top:1px;padding-bottom:1px}.program-table .month-cell{text-align:center;padding:2px 0;font-size:9px;font-weight:bold}.program-table .blank-row td{height:7mm;min-height:7mm}.program-table .c-no{width:7mm}.program-table .c-pokok{width:8%}.program-table .c-pokja{width:8%}.program-table .c-kegiatan{width:10%}.program-table .c-sasaran{width:8%}.program-table .c-lokasi{width:7%}.program-table .c-month{width:2%}.program-table .c-mitra{width:8%}.program-table .c-indikator{width:12%}.program-table .c-ket{width:12%}
+ .print-signatures{display:flex;justify-content:space-between;gap:35px;margin-top:10mm;text-align:center;font-size:11px;break-inside:avoid;page-break-inside:avoid}.print-signatures>div{width:45%}.print-note{font-size:9px;color:#444;margin-top:9px}
+ @media print{html,body{margin:0!important;padding:0!important}thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}.print-signatures{break-inside:avoid;page-break-inside:avoid}}
+ </style></head><body>${sections.join('')}<script>window.onload=()=>{window.focus();window.print()}<\/script></body></html>`;
+ w.document.open();w.document.write(html);w.document.close();
+}
+function printData(mode){if(!mod)return;const rows=data;const section=buildPrintSection(mod,rows,mode==='pdf'?'modern':mode,true);printDocument([section],`${mod.title} - PKK Digital`)}
+async function printAllBooksPDF(){
+ if(!mods.length){showToast('Daftar buku belum tersedia.','error');return}
+ const w=open('','_blank');if(!w){showToast('Izinkan pop-up untuk membuat PDF gabungan.','error','Pop-up diblokir');return}
+ w.document.write('<!doctype html><title>Menyiapkan PDF gabungan</title><body style="font:14px Arial;padding:24px">Menyiapkan data 17 buku PKK Digital…</body>');
+ try{
+  const entries=[];for(const book of mods){const rows=await call('getPokjaIVRecords',token,book.key);entries.push(buildPrintSection(book,rows,'modern',true));}
+  const css='@page{size:330mm 215mm;margin:8mm 9mm}*{box-sizing:border-box}body{font:10px Arial,sans-serif;color:#111;margin:0}.print-wrap{width:100%}.print-wrap+.print-wrap{break-before:page;page-break-before:always}.print-title{text-align:left;font-size:16px;font-weight:700;line-height:1.2;margin:0 0 5px}.print-sub{text-align:left;font-size:12px;font-weight:600;margin:0 0 9px}.print-date{text-align:right;font-size:11px;margin:0 0 6px}.print-table{border-collapse:collapse;width:100%;table-layout:auto;word-break:normal}.print-table th:first-child,.print-table td:first-child{width:7mm;min-width:7mm;max-width:7mm;padding-left:1px;padding-right:1px}.print-table thead th{min-height:9mm;vertical-align:middle;white-space:normal}.print-table tbody tr{height:7mm;min-height:7mm}.print-table th,.print-table td{border:1px solid #222;padding:4px 3px;font-size:12px;line-height:1.2;vertical-align:middle;overflow-wrap:anywhere}.print-table th{text-align:center;background:#f1f5f9;font-weight:700}.print-table tbody td{height:7mm;min-height:7mm;padding-top:1px;padding-bottom:1px}.print-table .blank-row td{height:7mm;padding:3px}.program-table{border-collapse:collapse;width:100%;table-layout:fixed}.program-table th,.program-table td{border:1px solid #111;padding:4px 3px;font-size:12px;line-height:1.15;vertical-align:middle;overflow-wrap:anywhere}.program-table th{text-align:center;font-weight:700}.program-table td{text-align:left;height:7mm;min-height:7mm;padding-top:1px;padding-bottom:1px}.program-table .month-cell{text-align:center;padding:2px 0;font-size:9px;font-weight:bold}.program-table .blank-row td{height:7mm;min-height:7mm}.program-table .c-no{width:7mm}.program-table .c-pokok{width:8%}.program-table .c-pokja{width:8%}.program-table .c-kegiatan{width:10%}.program-table .c-sasaran{width:8%}.program-table .c-lokasi{width:7%}.program-table .c-month{width:2%}.program-table .c-mitra{width:8%}.program-table .c-indikator{width:12%}.program-table .c-ket{width:12%}.print-signatures{display:flex;justify-content:space-between;gap:35px;margin-top:10mm;text-align:center;font-size:11px;break-inside:avoid;page-break-inside:avoid}.print-signatures>div{width:45%}.print-note{font-size:9px;color:#444;margin-top:9px}@media print{thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}.print-signatures{break-inside:avoid;page-break-inside:avoid}}';
+  w.document.open();w.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>Arsip Gabungan 17 Buku PKK Digital</title><style>${css}</style></head><body>${entries.join('')}<script>window.onload=()=>{window.focus();window.print()}<\/script></body></html>`);w.document.close();
+ }catch(e){w.close();showToast(e.message||'Gagal menyiapkan PDF gabungan.','error','Ekspor PDF gagal')}
+}
+
+async function logout(){try{await call('logout',token)}catch(e){}sessionStorage.removeItem('pkk_digital_session');location.reload()}
+if(token)start();
+</script></main></div><script>
+(function(){const status=document.getElementById('networkStatus');function update(){if(status)status.style.display=navigator.onLine?'none':'block'}window.addEventListener('online',update);window.addEventListener('offline',update);update();if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(err=>console.warn('PWA service worker:',err)));})();
 </script>
-</body>
-</html>
+</body></html>
