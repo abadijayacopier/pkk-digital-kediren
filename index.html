@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10264d">
+<meta name="description" content="PKK Digital Desa Kediren – Administrasi Pokja IV">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/icon-192.png" sizes="192x192">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<title>PKK Digital – Desa Kediren</title>
+<style>body{font:16px system-ui,sans-serif;margin:0;background:#f4f7fc;color:#17243b}main{max-width:760px;margin:10vh auto;padding:24px}section{background:white;border:1px solid #e2e8f0;border-radius:18px;padding:28px;box-shadow:0 8px 32px #10264d12}h1{color:#10264d}a{color:#2563eb}code{background:#eef2ff;padding:3px 6px;border-radius:5px} .hint{color:#64748b;line-height:1.7}</style>
+</head>
+<body>
+<main><section>
+<h1>PKK Digital – Desa Kediren</h1>
+<p>Kerangka PWA untuk administrasi Pokja IV.</p>
+<p class="hint">Frontend aplikasi lengkap akan diaktifkan setelah integrasi API Google Apps Script selesai diverifikasi. Jangan gunakan halaman ini untuk operasional atau memasukkan data pribadi terlebih dahulu.</p>
+<p class="hint">Developer: <strong>Supriyanto Abadi Jaya</strong> · © <span id="year"></span></p>
+</section></main>
+<script>document.getElementById('year').textContent=new Date().getFullYear();if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(console.error));}</script>
+</body></html>
