@@ -266,7 +266,7 @@ function drawTable(){
     if(toolbar)toolbar.classList.remove('hidden');
     if(pagerWrap)pagerWrap.classList.remove('hidden');
     const rows=$('rows');
-    if(rows)rows.innerHTML=shown.length?shown.map(r=>`<tr>${mod.fields.map(f=>`<td>${esc(r[f])}</td>`).join('')}<td class="noprint"><div class="crud-actions"><button class="btn-icon" title="Edit data" aria-label="Edit data" onclick="edit('${esc(r.record_id)}')">✎</button><button class="btn-danger" title="Hapus data" aria-label="Hapus data" onclick="del('${esc(r.record_id)}')">Hapus</button></div></td></tr>`).join(''):`<tr><td colspan="${mod.fields.length+1}" class="empty-state"><div class="empty-icon">⌕</div><b class="block text-slate-600 mb-1">Data tidak ditemukan</b><span>Coba ubah kata kunci atau filter pencarian.</span></td></tr>`;
+    if(rows)rows.innerHTML=shown.length?shown.map((r,i)=>`<tr>${mod.fields.map(f=>`<td>${String(f).trim().toLowerCase()==='no'?(from+i+1):esc(r[f])}</td>`).join('')}<td class="noprint"><div class="crud-actions"><button class="btn-icon" title="Edit data" aria-label="Edit data" onclick="edit('${esc(r.record_id)}')">✎</button><button class="btn-danger" title="Hapus data" aria-label="Hapus data" onclick="del('${esc(r.record_id)}')">Hapus</button></div></td></tr>`).join(''):`<tr><td colspan="${mod.fields.length+1}" class="empty-state"><div class="empty-icon">⌕</div><b class="block text-slate-600 mb-1">Data tidak ditemukan</b><span>Coba ubah kata kunci atau filter pencarian.</span></td></tr>`;
   }
   $('recordCount').textContent=data.length===0?'0 data tersimpan':`${a.length} dari ${data.length} data`;
   $('tableInfo').textContent=a.length?`Menampilkan ${from+1}–${Math.min(from+tableState.pageSize,a.length)} dari ${a.length}`:'Tidak ada hasil';
