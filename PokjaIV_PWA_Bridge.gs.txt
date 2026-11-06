@@ -1,0 +1,28 @@
+/**
+ * GAS bridge template – review names/signatures against the live Apps Script project
+ * before copying. This template is NOT installed in the user's GAS project.
+ */
+function doPost(e) {
+  try {
+    var body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    var method = String(body.method || '');
+    var args = Array.isArray(body.args) ? body.args : [];
+    var allowed = {
+      login: true, getCurrentUser: true, logout: true,
+      getPokjaIVModules: true, getPokjaIVSummary: true,
+      getPokjaIVRecords: true, savePokjaIVRecord: true,
+      deletePokjaIVRecord: true, getPokjaIVDashboardData: true,
+      createPokjaIVBackup: true, setupPokjaIVDailyBackup: true
+    };
+    if (!allowed[method]) throw new Error('Metode API tidak diizinkan.');
+    var fn = this[method];
+    if (typeof fn !== 'function') throw new Error('Fungsi backend tidak ditemukan: ' + method);
+    var result = fn.apply(null, args);
+    return ContentService.createTextOutput(JSON.stringify({result: result}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      error: err && err.message ? err.message : String(err)
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}

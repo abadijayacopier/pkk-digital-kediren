@@ -1,0 +1,8 @@
+const ALLOWED_METHODS = new Set(['login','getCurrentUser','getPokjaIVModules','getPokjaIVSummary','getPokjaIVRecords','savePokjaIVRecord','deletePokjaIVRecord','logout','getPokjaIVDashboardData','createPokjaIVBackup','setupPokjaIVDailyBackup']);
+module.exports = async (req,res)=>{res.setHeader('Cache-Control','no-store');if(req.method!=='POST')return res.status(405).json({error:'Method not allowed'});const endpoint=process.env.GAS_WEB_APP_URLÚYŠY[™Ú[K×šÎ—×ÜØÜš\™ÛÛÙÛW˜ÛÛWÛXXÜ›Ü×Ü×ËË\Ý
+[™Ú[
+J^Ü™]\›ˆ™\ËœÝ]\ÊL
+KšœÛÛŠÙ\œ›ÜŽ‰ÑÐT×ÕÑP—ÐTÕT“™[[HZÛÛ™šYÝ\˜\ÚK‰ßJ_]ž^ØÛÛœÝ›ÙO]\[Ùˆ™\K˜›ÙOOOIÜÝš[™ÉÏÒ”ÓÓ‹œ\œÙJ™\K˜›ÙJNœ™\K˜›ÙNÚYŠX›Ù_PSÕÑQÓQUÑËš\Ê›ÙK›Y]Ù
+_P\œ˜^Kš\Ð\œ˜^J›ÙK˜\™ÜÊJ\™]\›ˆ™\ËœÝ]\Ê
+KšœÛÛŠÙ\œ›ÜŽ‰Ô\›Z[X[ˆTHYZÈ˜[Y‰ßJNÛ]\X]ØZ]™]Ú
+[™Ú[ÛY]Ù‰ÔÔÕ	ËXY\œÎžÉÐÛÛ[U\IÎ‰Ø\XØ][Û‹ÚœÛÛ‰ßK›ÙN’”ÓÓ‹œÝš[™ÚYžJÛY]Ù˜›ÙK›Y]Ù\™ÜÎ˜›ÙK˜\™ÜßJK™Y\™XÝ‰ÛX[X[	ßJNÚYŠÝôÔ°÷ÓbÃßMË};,=ôñt¹¥¹±Õ‘•Ì¡ÕÀ¹ÍÑ…ÑÕÌ¤¥í¥˜ …ÕÀ¹¡•…‘•ÉÌ¹•Ð ±½…Ñ¥½¸œ¤¥Ñ¡É½Ü¹•ÜÉÉ½È I•‘¥É•ÐÑ…¹Á„±½…Ñ¥½¸¸œ¤íÕÀõ…Ý…¥Ð™•Ñ ¡ÕÀ¹¡•…‘•ÉÌ¹•Ð ±½…Ñ¥½¸œ¤±íµ•Ñ¡½èPô¥õ½¹ÍÐÉ…Üõ…Ý…¥ÐÕÀ¹Ñ•áÐ ¤í±•ÐÁ…å±½…íÉåíÁ…å±½…õ)M=8¹Á…ÉÍ”¡É…Ü¥õ…Ñ¡íÉ•ÑÕÉ¸É•Ì¹ÍÑ…ÑÕÌ ÔÀÈ¤¹©Í½¸¡í•ÉÉ½ÈèI•ÍÁ½¹ÌL‰Õ­…¸)M=8Ù…±¥¸œ­ô¥õ¥˜ …ÕÀ¹½¬¥É•ÑÕÉ¸É•Ì¹ÍÑ…ÑÕÌ ÔÀÈ¤¹©Í½¸¡í•ÉÉ½ÈéÁ…å±½…¹•ÉÉ½Éñð	…­•¹L……°¸œô¤íÉ•ÑÕÉ¸É•Ì¹ÍÑ…ÑÕÌ ÈÀÀ¤¹©Í½¸¡Á…å±½…¥õ…Ñ ¡”¥íÉ•ÑÕÉ¸É•Ì¹ÍÑ…ÑÕÌ ÔÀÈ¤¹©Í½¸¡í•ÉÉ½Èé”¹µ•ÍÍ…•ñðL‰…­•¹Ñ¥‘…¬Ñ•É¡Õ‰Õ¹œ¸œô¥õôì
