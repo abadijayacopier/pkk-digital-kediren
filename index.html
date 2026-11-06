@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#10264d"><meta name="description" content="Administrasi PKK Digital Desa Kediren – Pokja IV">
+<meta name="theme-color" content="#10264d"><meta name="description" content="Administrasi PKK Digital Desa Kediren – Pokja IV"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="PKK Digital">
 <link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icons/icon-192.png" sizes="192x192"><link rel="apple-touch-icon" href="/icons/icon-192.png"><script src="https://cdn.tailwindcss.com"></script><style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 :root{--ink:#17243b;--muted:#718096;--line:#e7edf5;--blue:#2563eb;--navy:#10264d;--soft:#f4f7fc}
@@ -97,6 +97,7 @@ table{border-collapse:separate;border-spacing:0;width:100%;min-width:700px}th,td
 @media print{.noprint,#app aside,#app header{display:none!important}body{background:#fff}.card{box-shadow:none;border:0;padding:0}}
 .penyuluhan-table{table-layout:fixed;width:100%}.penyuluhan-table th{white-space:normal;word-break:normal;overflow-wrap:break-word;text-align:center;vertical-align:middle;padding:3px 4px}.penyuluhan-table td{height:7mm;min-height:7mm}.dashboard-chart{min-height:180px}@media(max-width:640px){.stat-row{grid-template-columns:95px 1fr 28px}.card{min-width:0}}
 </style></head><body>
+<button id="pwaInstallBtn" type="button" aria-label="Pasang PKK Digital" style="display:none;position:fixed;right:18px;bottom:18px;z-index:95;border:0;border-radius:999px;padding:13px 18px;background:linear-gradient(135deg,#3478ed,#1e40af);color:#fff;font:700 13px Inter,Arial,sans-serif;box-shadow:0 10px 28px #1e40af40;cursor:pointer">⬇ Pasang PKK Digital</button>
 <div id="networkStatus" role="status" aria-live="polite" style="display:none;position:sticky;top:0;z-index:1000;padding:8px 12px;text-align:center;font:600 12px Inter,Arial;background:#fff7ed;color:#9a3412">Koneksi internet terputus. Data belum dapat disinkronkan.</div>
 <div id="login" class="min-h-screen grid place-items-center p-5"><form id="lf" class="card w-full max-w-md space-y-4"><h1 class="text-2xl font-bold text-blue-700">PKK Digital</h1><p class="text-sm text-slate-500">Desa Kediren · Administrasi Pokja IV</p><input id="un" class="field" placeholder="Username" required><input id="pw" class="field" type="password" placeholder="Password" required><p id="err" class="text-sm text-red-600"></p><button class="btn w-full">Masuk</button></form></div>
 <div id="app" class="hidden min-h-screen"><aside id="sidebar" class="fixed w-64 bg-white border-r inset-y-0 p-4 overflow-auto noprint"><div class="flex items-center justify-between gap-3 mb-2"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-white/15 grid place-items-center font-extrabold text-lg">PK</div><div><h2 class="font-extrabold text-white text-lg leading-tight">PKK Digital</h2><p class="text-[10px] text-blue-200">DESA KEDIREN</p></div></div><button type="button" class="hidden text-white/80 text-xl px-2" id="closeMenu" onclick="toggleMenu(false)" aria-label="Tutup menu">×</button></div><div class="text-[10px] uppercase tracking-widest text-blue-200/70 mt-7 mb-2 px-3">Menu Utama</div><button class="nav active" onclick="dashboard()">Dashboard</button><div class="nav-section">Administrasi</div><div id="nav"></div><hr class="my-4"><div id="who" class="text-xs mb-2"></div><button class="nav" onclick="logout()">Keluar</button></aside><button id="sidebarOverlay" class="hidden fixed inset-0 bg-slate-950/45 z-50 noprint" onclick="toggleMenu(false)" aria-label="Tutup menu"></button>
@@ -459,6 +460,40 @@ async function printAllBooksPDF(){
 async function logout(){try{await call('logout',token)}catch(e){}sessionStorage.removeItem('pkk_digital_session');location.reload()}
 if(token)start();
 </script></main></div><script>
-(function(){const status=document.getElementById('networkStatus');function update(){if(status)status.style.display=navigator.onLine?'none':'block'}window.addEventListener('online',update);window.addEventListener('offline',update);update();if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(err=>console.warn('PWA service worker:',err)));})();
+(function(){
+ const status=document.getElementById('networkStatus');
+ const installBtn=document.getElementById('pwaInstallBtn');
+ let installPrompt=null;
+ const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ const isStandalone=()=>window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+ function updateNetwork(){if(status)status.style.display=navigator.onLine?'none':'block'}
+ function updateInstallButton(){
+   if(!installBtn)return;
+   if(isStandalone()){installBtn.style.display='none';return}
+   if(isIOS){installBtn.textContent='＋ Pasang di Layar Utama';installBtn.style.display='inline-flex';return}
+   installBtn.style.display=installPrompt?'inline-flex':'none';
+ }
+ window.addEventListener('online',updateNetwork);
+ window.addEventListener('offline',updateNetwork);
+ window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;updateInstallButton()});
+ window.addEventListener('appinstalled',()=>{installPrompt=null;updateInstallButton()});
+ if(installBtn)installBtn.addEventListener('click',async()=>{
+   if(isIOS){
+     alert('Cara memasang PKK Digital di iPhone/iPad:\n1. Buka halaman ini melalui Safari.\n2. Tekan tombol Bagikan (ikon kotak dengan panah ke atas).\n3. Pilih “Tambahkan ke Layar Utama”.\n4. Tekan “Tambah”.');
+     return;
+   }
+   if(!installPrompt){alert('Untuk memasang aplikasi, buka situs ini melalui Chrome atau Edge versi terbaru.');return}
+   installPrompt.prompt();
+   try{await installPrompt.userChoice}catch(e){}
+   installPrompt=null;updateInstallButton();
+ });
+ updateNetwork();updateInstallButton();
+ window.matchMedia('(display-mode: standalone)').addEventListener?.('change',updateInstallButton);
+ if('serviceWorker' in navigator)window.addEventListener('load',()=>{
+   navigator.serviceWorker.register('/sw.js',{scope:'/'})
+    .then(reg=>{reg.update().catch(()=>{});reg.addEventListener('updatefound',()=>{const worker=reg.installing;if(worker)worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)console.info('Pembaruan PKK Digital siap digunakan setelah halaman dimuat ulang.')})})})
+    .catch(err=>console.warn('PWA service worker:',err));
+ });
+})();
 </script>
 </body></html>
